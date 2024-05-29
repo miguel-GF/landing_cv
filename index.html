@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Curriculum - IPES</title>
+  <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link href="css/app.css" rel="stylesheet">
+</head>
+
+<body>
+  <div id="app" setup>
+    <div class="container-full" v-if="!cargaInicial">
+      <div class="custom-loader"></div>
+    </div>
+    <div class="container-fluid py-5 px-2">
+      <div class="container text-center">
+        <h5>Formulario Docentes</h5>
+        <h1>Datos Generales y Curriculum Vitae</h1>
+      </div>
+    </div>
+    <div class="container-fluid py-4" style="background-color: lightblue;">
+      <form @submit.prevent="validarFormulario()">
+        <div class="container">
+          <div class="row">
+            <!-- PRIMERA PARTE -->
+            <div class="row pb-3">
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-8">
+                <label for="nombre" class="form-label">Nombre del Docente *</label>
+                <input type="text" required class="form-control" id="nombre" placeholder="Nombre Completo" v-model="nombre"
+                  @input="validateNombre">
+                <span v-if="!nombreValido" style="color: red;">Ingrese un nombre válido</span>
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento *</label>
+                <input type="date" required class="form-control" id="fecha_nacimiento" placeholder="MM/DD/YYYY" v-model="fechaNacimiento"
+                @input="validateFechaNacimiento"
+                >
+                <span v-if="!fechaNacimientoValido" style="color: red;">Ingrese una fecha de nacimiento válida</span>
+              </div>
+            </div>
+            <!-- LUGAR NACIMIENTO -->
+            <div class="row pt-2 pb-3">
+              <div class="col-12 pb-2">
+                <span class="h6">LUGAR DE NACIMIENTO</span>
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="ln_ciudad" class="form-label">Ciudad *</label>
+                <input type="text" class="form-control" id="ln_ciudad" placeholder="">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="ln_estado" class="form-label">Estado *</label>
+                <input type="text" class="form-control" id="ln_estado" placeholder="">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="ln_pais" class="form-label">País*</label>
+                <input type="text" class="form-control" id="ln_pais" placeholder="">
+              </div>
+            </div>
+            <!-- ESTADO CIVIL -->
+            <div class="row pt-2 pb-3">
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="estado_civil" class="form-label">Estado Civil *</label>
+                <input type="text" class="form-control" id="estado_civil" placeholder="">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="genero" class="form-label">Género *</label>
+                <input type="text" class="form-control" id="genero" placeholder="">
+              </div>
+            </div>
+            <!-- CORREO -->
+            <div class="row pt-2 pb-3">
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="correo" class="form-label">Correo electrónico *</label>
+                <input type="email" class="form-control" id="correo" placeholder="">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="celular" class="form-label">Celular *</label>
+                <input type="tel" class="form-control" id="celular" placeholder="">
+              </div>
+            </div>
+            <!-- FACEBOOK -->
+            <div class="row pt-2 pb-3">
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="facebook" class="form-label">Facebook</label>
+                <input type="email" class="form-control" id="facebook" placeholder="">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="telefono" class="form-label">Teléfono fijo</label>
+                <input type="tel" class="form-control" id="telefono" placeholder="">
+              </div>
+            </div>
+            <!-- DATOS FISCALES -->
+            <div class="row pt-2 pb-3">
+              <div class="col-12 pb-2">
+                <span class="h6">DATOS FISCALES</span>
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-sm-6 col-md-3">
+                <label for="rfc" class="form-label">RFC</label>
+                <input type="text" class="form-control" id="rfc" placeholder="">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-sm-6 col-md-3">
+                <label for="curp" class="form-label">CURP</label>
+                <input type="text" class="form-control" id="curp" placeholder="">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-sm-6 col-md-3">
+                <label for="clabe" class="form-label">CLABE Interbancaria</label>
+                <input type="text" class="form-control" id="clabe" placeholder="">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-sm-6 col-md-3">
+                <label for="banco" class="form-label">Banco</label>
+                <input type="text" class="form-control" id="banco" placeholder="">
+              </div>
+            </div>
+            <!-- DOMICILIO -->
+            <div class="row pt-2 pb-3">
+              <div class="col-12 pb-2">
+                <span class="h6">DOMICILIO</span>
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="domicilio_calle" class="form-label">Calle</label>
+                <input type="text" class="form-control" id="domicilio_calle" placeholder="">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="domicilio_no_exterior" class="form-label">Número Exterior</label>
+                <input type="text" class="form-control" id="domicilio_no_exterior" placeholder="S/N">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="domicilio_no_interior" class="form-label">Número Interior</label>
+                <input type="text" class="form-control" id="domicilio_no_interior" placeholder="">
+              </div>
+            </div>
+            <div class="row pt-2 pb-3">
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="domicilio_colonia" class="form-label">Colonia</label>
+                <input type="text" class="form-control" id="domicilio_colonia" placeholder="">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="domicilio_ciudad" class="form-label">Ciudad</label>
+                <input type="text" class="form-control" id="domicilio_ciudad" placeholder="">
+              </div>
+            </div>
+            <div class="row pt-2 pb-3">
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="domicilio_estado" class="form-label">Estado</label>
+                <input type="text" class="form-control" id="domicilio_estado" placeholder="">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="domicilio_cp" class="form-label">Código Postal</label>
+                <input type="text" class="form-control" id="domicilio_cp" placeholder="">
+              </div>
+            </div>
+            <!-- DIRECCION FISCAL -->
+            <div class="row pt-2 pb-3">
+              <div class="col-12 pb-2">
+                <span class="h6">DIRECCIÓN FISCAL</span>
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="fiscal_calle" class="form-label">Calle</label>
+                <input type="text" class="form-control" id="fiscal_calle" placeholder="">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="fiscal_no_exterior" class="form-label">Número Exterior</label>
+                <input type="text" class="form-control" id="fiscal_no_exterior" placeholder="S/N">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="fiscal_no_interior" class="form-label">Número Interior</label>
+                <input type="text" class="form-control" id="fiscal_no_interior" placeholder="">
+              </div>
+            </div>
+            <div class="row pt-2 pb-3">
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="fiscal_colonia" class="form-label">Colonia</label>
+                <input type="text" class="form-control" id="fiscal_colonia" placeholder="">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="fiscal_ciudad" class="form-label">Ciudad</label>
+                <input type="text" class="form-control" id="fiscal_ciudad" placeholder="">
+              </div>
+            </div>
+            <div class="row pt-2 pb-3">
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="fiscal_estado" class="form-label">Estado</label>
+                <input type="text" class="form-control" id="fiscal_estado" placeholder="">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="fiscal_cp" class="form-label">Código Postal</label>
+                <input type="text" class="form-control" id="fiscal_cp" placeholder="">
+              </div>
+            </div>
+            <!-- ACTIVIDAD PREPONDERANTE -->
+            <div class="row pt-2 pb-3">
+              <div class="col-12 pb-2">
+                <span class="h6">ACTIVIDAD PREPONDERANTE (SEÑALE EL PORCENTAJE DE SUS INGRESOS)</span>
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-sm-6 col-md-3">
+                <label for="porcentaje_actividad_profesional" class="form-label">Actividad Profesional</label>
+                <input type="number" min="0" max="100" class="form-control" id="porcentaje_actividad_profesional"
+                  placeholder="0 - 100 %">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-sm-6 col-md-3">
+                <label for="porcentaje_asalariado" class="form-label">Empleado y/o Asalariado</label>
+                <input type="number" min="0" max="100" class="form-control" id="porcentaje_asalariado"
+                  placeholder="0 - 100 %">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-sm-6 col-md-3">
+                <label for="porcentaje_pensionado" class="form-label">Pensionado</label>
+                <input type="number" min="0" max="100" class="form-control" id="porcentaje_pensionado"
+                  placeholder="0 - 100 %">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-sm-6 col-md-3">
+                <label for="porcentaje_docencia" class="form-label">Docencia</label>
+                <input type="number" min="0" max="100" class="form-control" id="porcentaje_docencia"
+                  placeholder="0 - 100 %">
+              </div>
+            </div>
+            <!-- INFORMACIÓN COMPLEMENTARIA -->
+            <div class="row pt-2 pb-3">
+              <div class="col-12 pb-2">
+                <span class="h6">INFORMACIÓN COMPLEMENTARIA</span>
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="enfermedades" class="form-label">Enfermedad(es) crónica(s)</label>
+                <input type="text" class="form-control" id="enfermedades" placeholder="">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="alergias" class="form-label">Alergia(s)</label>
+                <input type="text" class="form-control" id="alergias" placeholder="">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="tipo_sangre" class="form-label">Tipo de Sangre con RH</label>
+                <input type="text" class="form-control" id="tipo_sangre" placeholder="">
+              </div>
+            </div>
+            <!-- DOCUMENTACION -->
+            <div class="row pt-2 pb-3">
+              <div class="col-12 pb-2">
+                <span class="h6">DOCUMENTOS ENTREGADOS PARA EL EXPEDIENTE (Adjuntar Copias de los Documentos en Formato
+                  PDF)</span>
+              </div>
+              <!-- CV -->
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="descripcion_cv" class="form-label">Currículum</label>
+                <input type="text" class="form-control" id="descripcion_cv" placeholder="Descripción del curriculum">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="archivo_cv" class="form-label">No Hay Archivo Adjuntado</label>
+                <input class="form-control" accept=".pdf" type="file" id="archivo_cv">
+              </div>
+            </div>
+            <!-- INE -->
+            <div class="row pt-2 pb-3">
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="descripcion_ine" class="form-label">INE</label>
+                <input type="text" class="form-control" id="descripcion_ine" placeholder="Descripción de la INE">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="archivo_ine" class="form-label">No Hay Archivo Adjuntado</label>
+                <input class="form-control" accept=".pdf" type="file" id="archivo_ine">
+              </div>
+            </div>
+            <!-- CURP -->
+            <div class="row pt-2 pb-3">
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="descripcion_curp" class="form-label">CURP</label>
+                <input type="text" class="form-control" id="descripcion_curp" placeholder="">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="archivo_curp" class="form-label">No Hay Archivo Adjuntado</label>
+                <input class="form-control" accept=".pdf" type="file" id="archivo_curp">
+              </div>
+            </div>
+            <!-- COMPROBANTE DOMICILIO -->
+            <div class="row pt-2 pb-3">
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="descripcion_domicilio" class="form-label">Comprobante Domiciliario y/o Fiscal</label>
+                <input type="text" class="form-control" id="descripcion_domicilio"
+                  placeholder="Descripción del comprobante">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="archivo_domicilio" class="form-label">No Hay Archivo Adjuntado</label>
+                <input class="form-control" accept=".pdf" type="file" id="archivo_domicilio">
+              </div>
+            </div>
+            <!-- CONSTANCIA DE SITUACIÓN FISCAL -->
+            <div class="row pt-2 pb-3">
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="descripcion_situacion_fiscal" class="form-label">Comprobante de Situación Fiscal</label>
+                <input type="text" class="form-control" id="descripcion_situacion_fiscal" placeholder="">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="archivo_situacion_fiscal" class="form-label">No Hay Archivo Adjuntado</label>
+                <input class="form-control" accept=".pdf" type="file" id="archivo_situacion_fiscal">
+              </div>
+            </div>
+            <!-- ACTA DE NACIMIENTO -->
+            <div class="row pt-2 pb-3">
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="descripcion_acta" class="form-label">Acta de Nacimiento</label>
+                <input type="text" class="form-control" id="descripcion_acta" placeholder="">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="archivo_acta" class="form-label">No Hay Archivo Adjuntado</label>
+                <input class="form-control" accept=".pdf" type="file" id="archivo_acta">
+              </div>
+            </div>
+            <!-- CÉDULA PROFESIONAL -->
+            <div class="row pt-2 pb-3">
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="descripcion_cedula" class="form-label">Cédula Profesional</label>
+                <input type="text" class="form-control" id="descripcion_cedula"
+                  placeholder="Descripción de la Cédula Profesional">
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="archivo_cedula" class="form-label">No Hay Archivo Adjuntado</label>
+                <input class="form-control" accept=".pdf" type="file" id="archivo_cedula">
+              </div>
+            </div>
+          </div>
+          <div class="pt-2 col-12 text-center">
+            <button type="submit" class="col-3 btn btn-primary btn-lg">ENVIAR</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script src="bootstrap/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <script src="js/vue3.js"></script>
+  <script src="js/axios.min.js"></script>
+  <script src="js/main.js" type="module"></script>
+</body>
+
+</html>
