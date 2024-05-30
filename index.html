@@ -22,23 +22,22 @@
       </div>
     </div>
     <div class="container-fluid py-4" style="background-color: lightblue;">
-      <form @submit.prevent="validarFormulario()">
+      <form @submit.prevent="validarFormulario()" enctype="multipart/form-data">
         <div class="container">
           <div class="row">
             <!-- PRIMERA PARTE -->
             <div class="row pb-3">
               <div class="mb-3 mb-md-0 col-xs-12 col-md-8">
                 <label for="nombre" class="form-label">Nombre del Docente *</label>
-                <input type="text" required class="form-control" id="nombre" placeholder="Nombre Completo" v-model="nombre"
-                  @input="validateNombre">
-                <span v-if="!nombreValido" style="color: red;">Ingrese un nombre válido</span>
+                <input type="text" required class="form-control" id="nombre" placeholder="Nombre Completo"
+                  v-model="nombre" @input="validateNombre">
+                <span v-if="!nombreValido" class="color-error">Ingrese un nombre válido</span>
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento *</label>
-                <input type="date" required class="form-control" id="fecha_nacimiento" placeholder="MM/DD/YYYY" v-model="fechaNacimiento"
-                @input="validateFechaNacimiento"
-                >
-                <span v-if="!fechaNacimientoValido" style="color: red;">Ingrese una fecha de nacimiento válida</span>
+                <input type="date" required class="form-control" id="fecha_nacimiento" placeholder="MM/DD/YYYY"
+                  pattern="\d{1,2}/\d{1,2}/\d{4}" v-model="fechaNacimiento" @input="validateFechaNacimiento">
+                <span v-if="!fechaNacimientoValido" class="color-error">Ingrese una fecha de nacimiento válida</span>
               </div>
             </div>
             <!-- LUGAR NACIMIENTO -->
@@ -48,48 +47,123 @@
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="ln_ciudad" class="form-label">Ciudad *</label>
-                <input type="text" class="form-control" id="ln_ciudad" placeholder="">
+                <input type="text" required class="form-control" id="ln_ciudad" placeholder="" v-model="ciudad"
+                  @input="validateCiudad">
+                <span v-if="!ciudadValida" class="color-error">Ingrese la ciudad</span>
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="ln_estado" class="form-label">Estado *</label>
-                <input type="text" class="form-control" id="ln_estado" placeholder="">
+                <input type="text" required class="form-control" id="ln_estado" placeholder="" v-model="estado"
+                  @input="validateEstado">
+                <span v-if="!estadoValido" class="color-error">Ingrese el estado</span>
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="ln_pais" class="form-label">País*</label>
-                <input type="text" class="form-control" id="ln_pais" placeholder="">
+                <input type="text" required class="form-control" id="ln_pais" placeholder="" v-model="pais"
+                  @input="validatePais">
+                <span v-if="!paisValido" class="color-error">Ingrese el país</span>
               </div>
             </div>
             <!-- ESTADO CIVIL -->
             <div class="row pt-2 pb-3">
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="estado_civil" class="form-label">Estado Civil *</label>
-                <input type="text" class="form-control" id="estado_civil" placeholder="">
+                <select type="text" required class="form-select" id="estado_civil" placeholder="" v-model="estadoCivil"
+                  @input="validateEstadoCivil">
+                  <option value="soltero" selected>Soltero/a</option>
+                  <option value="casado">Casado/a</option>
+                  <option value="union_libre">Unión libre</option>
+                </select>
+                <span v-if="!estadoCivilValido" class="color-error">Ingrese su estado civil</span>
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="genero" class="form-label">Género *</label>
-                <input type="text" class="form-control" id="genero" placeholder="">
+                <select type="text" required class="form-select" id="genero" placeholder="" v-model="genero"
+                  @input="validateGenero">
+                  <option value="hombre" selected>Hombre</option>
+                  <option value="mujer">Mujer</option>
+                </select>
+                <span v-if="!generoValido" class="color-error">Ingrese su género</span>
               </div>
             </div>
-            <!-- CORREO -->
             <div class="row pt-2 pb-3">
+              <!-- CORREO -->
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
-                <label for="correo" class="form-label">Correo electrónico *</label>
-                <input type="email" class="form-control" id="correo" placeholder="">
+                <label for="correo" class="form-label">Correo Electrónico *</label>
+                <input type="email" required class="form-control" id="correo" placeholder="" v-model="correo"
+                  @input="validateCorreo">
+                <span v-if="!correoValido" class="color-error">Ingrese su correo electrónico</span>
               </div>
+              <!-- CELULAR -->
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
-                <label for="celular" class="form-label">Celular *</label>
-                <input type="tel" class="form-control" id="celular" placeholder="">
+                <label for="celular" class="form-label">Celular * (###-###-####)</label>
+                <input type="tel" required class="form-control" id="celular" placeholder="###-###-####"
+                  pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" v-model="celular" @input="validateCelular">
+                <span v-if="!celularValido" class="color-error">Ingrese su número de celular</span>
               </div>
             </div>
             <!-- FACEBOOK -->
             <div class="row pt-2 pb-3">
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
-                <label for="facebook" class="form-label">Facebook</label>
-                <input type="email" class="form-control" id="facebook" placeholder="">
+                <label for="facebook" class="form-label">Facebook URL</label>
+                <input type="text" class="form-control" id="facebook"
+                  placeholder="https://www.facebook.com/nombre-perfil/" v-model="facebook">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="telefono" class="form-label">Teléfono fijo</label>
-                <input type="tel" class="form-control" id="telefono" placeholder="">
+                <input type="tel" class="form-control" id="telefono" placeholder="" v-model="telefono">
+              </div>
+            </div>
+            <!-- DOMICILIO -->
+            <div class="row pt-2 pb-3">
+              <div class="col-12 pb-2">
+                <span class="h6">DOMICILIO</span>
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="domicilio_calle" class="form-label">Calle *</label>
+                <input type="text" required class="form-control" id="domicilio_calle" placeholder=""
+                  v-model="domicilioCalle" @input="validateDomicilioCalle">
+                <span v-if="!domicilioCalleValida" class="color-error">Ingrese la calle del domicilio</span>
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="domicilio_no_exterior" class="form-label">Número Exterior *</label>
+                <input type="text" required class="form-control" id="domicilio_no_exterior" placeholder=""
+                  v-model="domicilioNoExterior" @input="validateDomicilioNoExterior">
+                <span v-if="!domicilioNoExteriorValido" class="color-error">Ingrese número exterior del domicilio</span>
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="domicilio_no_interior" class="form-label">Número Interior</label>
+                <input type="text" class="form-control" id="domicilio_no_interior" placeholder="S/N"
+                  v-model="domicilioNoInterior">
+              </div>
+            </div>
+            <div class="row pt-2 pb-3">
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="domicilio_colonia" class="form-label">Colonia *</label>
+                <input type="text" required class="form-control" id="domicilio_colonia" placeholder=""
+                  v-model="domicilioColonia" @input="validateDomicilioColonia">
+                <span v-if="!domicilioColoniaValida" class="color-error">Ingrese la colonia del domicilio</span>
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="domicilio_ciudad" class="form-label">Ciudad *</label>
+                <input type="text" required class="form-control" id="domicilio_ciudad" placeholder=""
+                  v-model="domicilioCiudad" @input="validateDomicilioCiudad">
+                <span v-if="!domicilioCiudadValida" class="color-error">Ingrese la ciudad del domicilio</span>
+              </div>
+            </div>
+            <div class="row pt-2 pb-3">
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="domicilio_estado" class="form-label">Estado *</label>
+                <input type="text" required class="form-control" id="domicilio_estado" placeholder=""
+                  v-model="domicilioEstado" @input="validateDomicilioEstado">
+                <span v-if="!domicilioEstadoValido" class="color-error">Ingrese el estado del domicilio</span>
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="domicilio_cp" class="form-label">Código Postal * (#####)</label>
+                <input type="text" required class="form-control" id="domicilio_cp" placeholder="#####"
+                  pattern="[0-9]{5}" v-model="domicilioCodigoPostal" @input="validateDomicilioCodigoPostal">
+                <span v-if="!domicilioCodigoPostalValido" class="color-error">Ingrese el código postal del
+                  domicilio</span>
               </div>
             </div>
             <!-- DATOS FISCALES -->
@@ -99,57 +173,19 @@
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-sm-6 col-md-3">
                 <label for="rfc" class="form-label">RFC</label>
-                <input type="text" class="form-control" id="rfc" placeholder="">
+                <input type="text" class="form-control" id="rfc" placeholder="" v-model="rfc">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-sm-6 col-md-3">
                 <label for="curp" class="form-label">CURP</label>
-                <input type="text" class="form-control" id="curp" placeholder="">
+                <input type="text" class="form-control" id="curp" placeholder="" v-model="curp">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-sm-6 col-md-3">
                 <label for="clabe" class="form-label">CLABE Interbancaria</label>
-                <input type="text" class="form-control" id="clabe" placeholder="">
+                <input type="text" class="form-control" id="clabe" placeholder="" v-model="clabe">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-sm-6 col-md-3">
                 <label for="banco" class="form-label">Banco</label>
-                <input type="text" class="form-control" id="banco" placeholder="">
-              </div>
-            </div>
-            <!-- DOMICILIO -->
-            <div class="row pt-2 pb-3">
-              <div class="col-12 pb-2">
-                <span class="h6">DOMICILIO</span>
-              </div>
-              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
-                <label for="domicilio_calle" class="form-label">Calle</label>
-                <input type="text" class="form-control" id="domicilio_calle" placeholder="">
-              </div>
-              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
-                <label for="domicilio_no_exterior" class="form-label">Número Exterior</label>
-                <input type="text" class="form-control" id="domicilio_no_exterior" placeholder="S/N">
-              </div>
-              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
-                <label for="domicilio_no_interior" class="form-label">Número Interior</label>
-                <input type="text" class="form-control" id="domicilio_no_interior" placeholder="">
-              </div>
-            </div>
-            <div class="row pt-2 pb-3">
-              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
-                <label for="domicilio_colonia" class="form-label">Colonia</label>
-                <input type="text" class="form-control" id="domicilio_colonia" placeholder="">
-              </div>
-              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
-                <label for="domicilio_ciudad" class="form-label">Ciudad</label>
-                <input type="text" class="form-control" id="domicilio_ciudad" placeholder="">
-              </div>
-            </div>
-            <div class="row pt-2 pb-3">
-              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
-                <label for="domicilio_estado" class="form-label">Estado</label>
-                <input type="text" class="form-control" id="domicilio_estado" placeholder="">
-              </div>
-              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
-                <label for="domicilio_cp" class="form-label">Código Postal</label>
-                <input type="text" class="form-control" id="domicilio_cp" placeholder="">
+                <input type="text" class="form-control" id="banco" placeholder="" v-model="banco">
               </div>
             </div>
             <!-- DIRECCION FISCAL -->
@@ -159,35 +195,38 @@
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="fiscal_calle" class="form-label">Calle</label>
-                <input type="text" class="form-control" id="fiscal_calle" placeholder="">
+                <input type="text" class="form-control" id="fiscal_calle" placeholder="" v-model="fiscalCalle">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="fiscal_no_exterior" class="form-label">Número Exterior</label>
-                <input type="text" class="form-control" id="fiscal_no_exterior" placeholder="S/N">
+                <input type="text" class="form-control" id="fiscal_no_exterior" placeholder="S/N"
+                  v-model="fiscalNoExterior">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="fiscal_no_interior" class="form-label">Número Interior</label>
-                <input type="text" class="form-control" id="fiscal_no_interior" placeholder="">
+                <input type="text" class="form-control" id="fiscal_no_interior" placeholder=""
+                  v-model="fiscalNoInterior">
               </div>
             </div>
             <div class="row pt-2 pb-3">
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="fiscal_colonia" class="form-label">Colonia</label>
-                <input type="text" class="form-control" id="fiscal_colonia" placeholder="">
+                <input type="text" class="form-control" id="fiscal_colonia" placeholder="" v-model="fiscalColonia">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="fiscal_ciudad" class="form-label">Ciudad</label>
-                <input type="text" class="form-control" id="fiscal_ciudad" placeholder="">
+                <input type="text" class="form-control" id="fiscal_ciudad" placeholder="" v-model="fiscalCiudad">
               </div>
             </div>
             <div class="row pt-2 pb-3">
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="fiscal_estado" class="form-label">Estado</label>
-                <input type="text" class="form-control" id="fiscal_estado" placeholder="">
+                <input type="text" class="form-control" id="fiscal_estado" placeholder="" v-model="fiscalEstado">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
-                <label for="fiscal_cp" class="form-label">Código Postal</label>
-                <input type="text" class="form-control" id="fiscal_cp" placeholder="">
+                <label for="fiscal_cp" class="form-label">Código Postal (#####)</label>
+                <input type="text" class="form-control" id="fiscal_cp" placeholder="#####" pattern="[0-9]{5}"
+                  v-model="fiscalCodigoPostal">
               </div>
             </div>
             <!-- ACTIVIDAD PREPONDERANTE -->
@@ -196,24 +235,24 @@
                 <span class="h6">ACTIVIDAD PREPONDERANTE (SEÑALE EL PORCENTAJE DE SUS INGRESOS)</span>
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-sm-6 col-md-3">
-                <label for="porcentaje_actividad_profesional" class="form-label">Actividad Profesional</label>
+                <label for="porcentaje_actividad_profesional" class="form-label">Actividad Profesional %</label>
                 <input type="number" min="0" max="100" class="form-control" id="porcentaje_actividad_profesional"
-                  placeholder="0 - 100 %">
+                  placeholder="0 - 100 %" v-model="porcentajeActividadProf">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-sm-6 col-md-3">
-                <label for="porcentaje_asalariado" class="form-label">Empleado y/o Asalariado</label>
+                <label for="porcentaje_asalariado" class="form-label">Empleado y/o Asalariado %</label>
                 <input type="number" min="0" max="100" class="form-control" id="porcentaje_asalariado"
-                  placeholder="0 - 100 %">
+                  placeholder="0 - 100 %" v-model="porcentajeAsalariado">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-sm-6 col-md-3">
-                <label for="porcentaje_pensionado" class="form-label">Pensionado</label>
+                <label for="porcentaje_pensionado" class="form-label">Pensionado %</label>
                 <input type="number" min="0" max="100" class="form-control" id="porcentaje_pensionado"
-                  placeholder="0 - 100 %">
+                  placeholder="0 - 100 %" v-model="porcentajePensionado">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-sm-6 col-md-3">
-                <label for="porcentaje_docencia" class="form-label">Docencia</label>
+                <label for="porcentaje_docencia" class="form-label">Docencia %</label>
                 <input type="number" min="0" max="100" class="form-control" id="porcentaje_docencia"
-                  placeholder="0 - 100 %">
+                  placeholder="0 - 100 %" v-model="porcentajeDocencia">
               </div>
             </div>
             <!-- INFORMACIÓN COMPLEMENTARIA -->
@@ -223,15 +262,25 @@
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="enfermedades" class="form-label">Enfermedad(es) crónica(s)</label>
-                <input type="text" class="form-control" id="enfermedades" placeholder="">
+                <input type="text" class="form-control" id="enfermedades" placeholder="" v-model="enfermedades">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="alergias" class="form-label">Alergia(s)</label>
-                <input type="text" class="form-control" id="alergias" placeholder="">
+                <input type="text" class="form-control" id="alergias" placeholder="" v-model=""alergias>
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
-                <label for="tipo_sangre" class="form-label">Tipo de Sangre con RH</label>
-                <input type="text" class="form-control" id="tipo_sangre" placeholder="">
+                <label for="tipo_sangre" class="form-label">Tipo de Sangre</label>
+                <select type="text" required class="form-select" id="tipo_sangre" v-model="tipoSangre">
+                  <option value="" selected>Selecciona una opción</option>
+                  <option value="A+">A+</option>
+                  <option value="O+">O+</option>
+                  <option value="B+">B+</option>
+                  <option value="AB+">AB+</option>
+                  <option value="A-">A-</option>
+                  <option value="O-">O-</option>
+                  <option value="B-">B-</option>
+                  <option value="AB-">AB-</option>
+                </select>
               </div>
             </div>
             <!-- DOCUMENTACION -->
