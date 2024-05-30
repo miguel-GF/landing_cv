@@ -40,7 +40,7 @@ createApp({
       return estadoValido.value;
     };
     // DATOS DE PAIS
-    const pais = ref("México");
+    const pais = ref("MEXICO");
     const paisValido = ref(true);
     const validatePais = () => {
       paisValido.value = validacionGeneral(pais.value);
@@ -162,6 +162,22 @@ createApp({
     const alergias = ref("");
     // DATOS SANGRE
     const tipoSangre = ref("");
+    // DESCRIPCION ARCHVOS
+    const descripcionCurriculum = ref("");
+    const descripcionIne = ref("");
+    const descripcionCurp = ref("");
+    const descripcionDomicilio = ref("");
+    const descripcionSituacionFiscal = ref("");
+    const descripcionActaNacimiento = ref("");
+    const descripcionCedula = ref("");
+    // ARCHIVOS
+    const archivoCurriculum = ref(null);
+    const archivoIne = ref(null);
+    const archivoCurp = ref(null);
+    const archivoDomicilio = ref(null);
+    const archivoSituacionFiscal = ref(null);
+    const archivoActaNacimiento = ref(null);
+    const archivoCedula = ref(null);
     // ******* //
     // VALIDACION TODO FORMULARIO
     const formularioInvalido = computed(() => {
@@ -194,46 +210,86 @@ createApp({
       try {
         // const response = await axios.get('https://pokeapi.co/api/v2/pokemon/ditto');
         cargaInicial.value = false;
+        const formData = new FormData();
+        formData.append("nombre", nombre.value);
+        formData.append("fechaNacimiento", fechaNacimiento.value);
+        formData.append("ciudad", ciudad.value);
+        formData.append("estado", estado.value);
+        formData.append("pais", pais.value);
+        formData.append("estadoCivil", estadoCivil.value);
+        formData.append("genero", genero.value);
+        formData.append("correo", correo.value);
+        formData.append("celular", celular.value);
+        formData.append("facebook", facebook.value);
+        formData.append("telefono", telefono.value);
+        formData.append("domicilioCalle", domicilioCalle.value);
+        formData.append("domicilioNoExterior", domicilioNoExterior.value);
+        formData.append("domicilioNoInterior", domicilioNoInterior.value);
+        formData.append("domicilioColonia", domicilioColonia.value);
+        formData.append("domicilioCiudad", domicilioCiudad.value);
+        formData.append("domicilioEstado", domicilioEstado.value);
+        formData.append("domicilioCodigoPostal", domicilioCodigoPostal.value);
+        formData.append("rfc", rfc.value);
+        formData.append("curp", curp.value);
+        formData.append("clabe", clabe.value);
+        formData.append("banco", banco.value);
+        formData.append("fiscalCalle", fiscalCalle.value);
+        formData.append("fiscalNoExterior", fiscalNoExterior.value);
+        formData.append("fiscalNoInterior", fiscalNoInterior.value);
+        formData.append("fiscalColonia", fiscalColonia.value);
+        formData.append("fiscalCiudad", fiscalCiudad.value);
+        formData.append("fiscalEstado", fiscalEstado.value);
+        formData.append("fiscalCodigoPostal", fiscalCodigoPostal.value);
+        formData.append(
+          "porcentajeActividadProf",
+          porcentajeActividadProf.value
+        );
+        formData.append("porcentajeAsalariado", porcentajeAsalariado.value);
+        formData.append("porcentajePensionado", porcentajePensionado.value);
+        formData.append("porcentajeDocencia", porcentajeDocencia.value);
+        formData.append("enfermedades", enfermedades.value);
+        formData.append("alergias", alergias.value);
+        formData.append("tipoSangre", tipoSangre.value);
+        formData.append("descripcionCurriculum", descripcionCurriculum.value);
+        formData.append("descripcionIne", descripcionIne.value);
+        formData.append("descripcionCurp", descripcionCurp.value);
+        formData.append("descripcionDomicilio", descripcionDomicilio.value);
+        formData.append(
+          "descripcionSituacionFiscal",
+          descripcionSituacionFiscal.value
+        );
+        formData.append(
+          "descripcionActaNacimiento",
+          descripcionActaNacimiento.value
+        );
+        formData.append("descripcionCedula", descripcionCedula.value);
+        if (archivoCurriculum.value) {
+          formData.append("archivoCurriculum", archivoCurriculum.value);
+        }
+        if (archivoIne.value) {
+          formData.append("archivoIne", archivoIne.value);
+        }
+        if (archivoCurp.value) {
+          formData.append("archivoCurp", archivoCurp.value);
+        }
+        if (archivoDomicilio.value) {
+          formData.append("archivoDomicilio", archivoDomicilio.value);
+        }
+        if (archivoSituacionFiscal.value) {
+          formData.append(
+            "archivoSituacionFiscal",
+            archivoSituacionFiscal.value
+          );
+        }
+        if (archivoActaNacimiento.value) {
+          formData.append("archivoActaNacimiento", archivoActaNacimiento.value);
+        }
+        if (archivoCedula.value) {
+          formData.append("archivoCedula", archivoCedula.value);
+        }
         const response = await axios.post(
           "http://127.0.0.1:8000/api/v1/docente/cv",
-          {
-            nombre: nombre.value,
-            fechaNacimiento: fechaNacimiento.value,
-            ciudad: ciudad.value,
-            estado: estado.value,
-            pais: pais.value,
-            estadoCivil: estadoCivil.value,
-            genero: genero.value,
-            correo: correo.value,
-            celular: celular.value,
-            facebook: facebook.value,
-            telefono: telefono.value,
-            domicilioCalle: domicilioCalle.value,
-            domicilioNoExterior: domicilioNoExterior.value,
-            domicilioNoInterior: domicilioNoInterior.value,
-            domicilioColonia: domicilioColonia.value,
-            domicilioCiudad: domicilioCiudad.value,
-            domicilioEstado: domicilioEstado.value,
-            domicilioCodigoPostal: domicilioCodigoPostal.value,
-            rfc: rfc.value,
-            curp: curp.value,
-            clabe: clabe.value,
-            banco: banco.value,
-            fiscalCalle: fiscalCalle.value,
-            fiscalNoExterior: fiscalNoExterior.value,
-            fiscalNoInterior: fiscalNoInterior.value,
-            fiscalColonia: fiscalColonia.value,
-            fiscalCiudad: fiscalCiudad.value,
-            fiscalEstado: fiscalEstado.value,
-            fiscalCodigoPostal: fiscalCodigoPostal.value,
-            porcentajeActividadProf: porcentajeActividadProf.value,
-            porcentajeAsalariado: porcentajeAsalariado.value,
-            porcentajePensionado: porcentajePensionado.value,
-            porcentajeDocencia: porcentajeDocencia.value,
-            enfermedades: enfermedades.value,
-            alergias: alergias.value,
-            tipoSangre: tipoSangre.value,
-          }
+          formData
         );
         console.log(response);
       } catch (error) {
@@ -310,6 +366,20 @@ createApp({
       enfermedades,
       alergias,
       tipoSangre,
+      descripcionCurriculum,
+      descripcionIne,
+      descripcionCurp,
+      descripcionDomicilio,
+      descripcionSituacionFiscal,
+      descripcionActaNacimiento,
+      descripcionCedula,
+      archivoCurriculum,
+      archivoIne,
+      archivoCurp,
+      archivoDomicilio,
+      archivoSituacionFiscal,
+      archivoActaNacimiento,
+      archivoCedula,
       validarFormulario,
       enviarForm,
     };

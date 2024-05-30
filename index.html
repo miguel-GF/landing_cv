@@ -266,7 +266,7 @@
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="alergias" class="form-label">Alergia(s)</label>
-                <input type="text" class="form-control" id="alergias" placeholder="" v-model=""alergias>
+                <input type="text" class="form-control" id="alergias" placeholder="" v-model="" alergias>
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="tipo_sangre" class="form-label">Tipo de Sangre</label>
@@ -292,33 +292,38 @@
               <!-- CV -->
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="descripcion_cv" class="form-label">Currículum</label>
-                <input type="text" class="form-control" id="descripcion_cv" placeholder="Descripción del curriculum">
+                <input type="text" class="form-control" id="descripcion_cv" placeholder="Descripción del curriculum"
+                  v-model="descripcionCurriculum">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="archivo_cv" class="form-label">No Hay Archivo Adjuntado</label>
-                <input class="form-control" accept=".pdf" type="file" id="archivo_cv">
+                <input class="form-control" accept=".pdf" type="file" id="archivo_cv" v-model="archivoCurriculum"
+                  @change="e => archivoCurriculum = e.target.files[0]">
               </div>
             </div>
             <!-- INE -->
             <div class="row pt-2 pb-3">
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="descripcion_ine" class="form-label">INE</label>
-                <input type="text" class="form-control" id="descripcion_ine" placeholder="Descripción de la INE">
+                <input type="text" class="form-control" id="descripcion_ine" placeholder="Descripción de la INE"
+                  v-model="descripcionIne">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="archivo_ine" class="form-label">No Hay Archivo Adjuntado</label>
-                <input class="form-control" accept=".pdf" type="file" id="archivo_ine">
+                <input class="form-control" accept=".pdf" type="file" id="archivo_ine" v-model="archivoIne"
+                  @change="e => archivoIne = e.target.files[0]">
               </div>
             </div>
             <!-- CURP -->
             <div class="row pt-2 pb-3">
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="descripcion_curp" class="form-label">CURP</label>
-                <input type="text" class="form-control" id="descripcion_curp" placeholder="">
+                <input type="text" class="form-control" id="descripcion_curp" placeholder="" v-model="descripcionCurp">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="archivo_curp" class="form-label">No Hay Archivo Adjuntado</label>
-                <input class="form-control" accept=".pdf" type="file" id="archivo_curp">
+                <input class="form-control" accept=".pdf" type="file" id="archivo_curp" v-model="archivoCurp"
+                  @change="e => archivoCurp = e.target.files[0]">
               </div>
             </div>
             <!-- COMPROBANTE DOMICILIO -->
@@ -326,33 +331,38 @@
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="descripcion_domicilio" class="form-label">Comprobante Domiciliario y/o Fiscal</label>
                 <input type="text" class="form-control" id="descripcion_domicilio"
-                  placeholder="Descripción del comprobante">
+                  placeholder="Descripción del comprobante" v-model="descripcionDomicilio">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="archivo_domicilio" class="form-label">No Hay Archivo Adjuntado</label>
-                <input class="form-control" accept=".pdf" type="file" id="archivo_domicilio">
+                <input class="form-control" accept=".pdf" type="file" id="archivo_domicilio" v-model="archivoDomicilio"
+                  @change="e => archivoDomicilio = e.target.files[0]">
               </div>
             </div>
             <!-- CONSTANCIA DE SITUACIÓN FISCAL -->
             <div class="row pt-2 pb-3">
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="descripcion_situacion_fiscal" class="form-label">Comprobante de Situación Fiscal</label>
-                <input type="text" class="form-control" id="descripcion_situacion_fiscal" placeholder="">
+                <input type="text" class="form-control" id="descripcion_situacion_fiscal" placeholder=""
+                  v-model="descripcionSituacionFiscal">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="archivo_situacion_fiscal" class="form-label">No Hay Archivo Adjuntado</label>
-                <input class="form-control" accept=".pdf" type="file" id="archivo_situacion_fiscal">
+                <input class="form-control" accept=".pdf" type="file" id="archivo_situacion_fiscal"
+                  v-model="archivoSituacionFiscal" @change="e => archivoSituacionFiscal = e.target.files[0]">
               </div>
             </div>
             <!-- ACTA DE NACIMIENTO -->
             <div class="row pt-2 pb-3">
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="descripcion_acta" class="form-label">Acta de Nacimiento</label>
-                <input type="text" class="form-control" id="descripcion_acta" placeholder="">
+                <input type="text" class="form-control" id="descripcion_acta" placeholder=""
+                  v-model="descripcionActaNacimiento">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="archivo_acta" class="form-label">No Hay Archivo Adjuntado</label>
-                <input class="form-control" accept=".pdf" type="file" id="archivo_acta">
+                <input class="form-control" accept=".pdf" type="file" id="archivo_acta" v-model="archivoActaNacimiento"
+                  @change="e => archivoActaNacimiento = e.target.files[0]">
               </div>
             </div>
             <!-- CÉDULA PROFESIONAL -->
@@ -360,11 +370,12 @@
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="descripcion_cedula" class="form-label">Cédula Profesional</label>
                 <input type="text" class="form-control" id="descripcion_cedula"
-                  placeholder="Descripción de la Cédula Profesional">
+                  placeholder="Descripción de la Cédula Profesional" v-model="descripcionCedula">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="archivo_cedula" class="form-label">No Hay Archivo Adjuntado</label>
-                <input class="form-control" accept=".pdf" type="file" id="archivo_cedula">
+                <input class="form-control" accept=".pdf" type="file" id="archivo_cedula" v-model="archivoCedula"
+                  @change="e => archivoCedula = e.target.files[0]">
               </div>
             </div>
           </div>
