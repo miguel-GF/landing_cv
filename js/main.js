@@ -162,6 +162,8 @@ createApp({
     const alergias = ref("");
     // DATOS SANGRE
     const tipoSangre = ref("");
+    // INFORMACION ADICIONAL
+    const informacionAdicional = ref("");
     // DESCRIPCION ARCHVOS
     const descripcionCurriculum = ref("");
     const descripcionIne = ref("");
@@ -250,6 +252,7 @@ createApp({
         formData.append("enfermedades", enfermedades.value);
         formData.append("alergias", alergias.value);
         formData.append("tipoSangre", tipoSangre.value);
+        formData.append("informacionAdicional", informacionAdicional.value);
         formData.append("descripcionCurriculum", descripcionCurriculum.value);
         formData.append("descripcionIne", descripcionIne.value);
         formData.append("descripcionCurp", descripcionCurp.value);
@@ -366,6 +369,7 @@ createApp({
       enfermedades,
       alergias,
       tipoSangre,
+      informacionAdicional,
       descripcionCurriculum,
       descripcionIne,
       descripcionCurp,
