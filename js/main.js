@@ -305,6 +305,10 @@ createApp({
           mensajeError.value = mensaje;
           const modal = new bootstrap.Modal(document.getElementById('modalError'));
           modal.show();  
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('modalExito'));
+          modal.show();
+          limpiarDatos();
         }
       } catch (error) {
         mensajeError.value = error.response.data.error ?? '';
@@ -313,6 +317,75 @@ createApp({
       } finally {
         cargaInicial.value = true;
       }
+    };
+    const limpiarDatos = () => {
+      nombre.value = "";
+      nombreValido.value = true;
+      fechaNacimiento.value = "";
+      fechaNacimientoValido.value = true;
+      ciudad.value = "";
+      ciudadValida.value = true;
+      pais.value = "MEXICO";
+      paisValido.value = true;
+      estado.value = "";
+      estadoValido.value = true;
+      estadoCivil.value = "soltero";
+      estadoCivilValido.value = true;
+      genero.value = "hombre";
+      generoValido.value = true;
+      correo.value = "";
+      correoValido.value = true;
+      celular.value = "";
+      celularValido.value = "";
+      facebook.value = "";
+      telefono.value = "";
+      domicilioCalle.value = "";
+      domicilioCalleValida.value = true;
+      domicilioNoExterior.value = "";
+      domicilioNoExteriorValido.value = true;
+      domicilioNoInterior.value = "";
+      domicilioColonia.value = "";
+      domicilioColoniaValida.value = true;
+      domicilioCiudad.value = "";
+      domicilioCiudadValida.value = true;
+      domicilioEstado.value = "";
+      domicilioEstadoValido.value = true;
+      domicilioCodigoPostal.value = "";
+      domicilioCodigoPostalValido.value = true;
+      rfc.value = "";
+      curp.value = "";
+      clabe.value = "";
+      banco.value = "";
+      fiscalCalle.value = "";
+      fiscalNoExterior.value = "";
+      fiscalNoInterior.value = "";
+      fiscalColonia.value = "";
+      fiscalCiudad.value = "";
+      fiscalEstado.value = "";
+      fiscalCodigoPostal.value = "";
+      porcentajeActividadProf.value = "25";
+      porcentajeAsalariado.value = "25";
+      porcentajePensionado.value = "25";
+      porcentajeDocencia.value = "25";
+      enfermedades.value = "";
+      alergias.value = "";
+      tipoSangre.value = "";
+      informacionAdicional.value = "";
+      descripcionCurriculum.value = "";
+      descripcionIne.value = "";
+      descripcionCurp.value = "";
+      descripcionDomicilio.value = "";
+      descripcionSituacionFiscal.value = "";
+      descripcionActaNacimiento.value = "";
+      descripcionCedula.value = "";
+      archivoCurriculum.value = null;
+      archivoIne.value = null;
+      archivoCurp.value = null;
+      archivoDomicilio.value = null;
+      archivoSituacionFiscal.value = null;
+      archivoActaNacimiento.value = null;
+      archivoCedula.value = null;
+      mensajeError.value = "";
     };
     return {
       cargaInicial,
