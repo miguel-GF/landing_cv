@@ -210,7 +210,6 @@ createApp({
     };
     const enviarForm = async () => {
       try {
-        // const response = await axios.get('https://pokeapi.co/api/v2/pokemon/ditto');
         cargaInicial.value = false;
         const formData = new FormData();
         formData.append("nombre", nombre.value);
@@ -292,7 +291,12 @@ createApp({
         }
         const response = await axios.post(
           "http://127.0.0.1:8000/api/v1/docente/cv",
-          formData
+          formData,
+          {
+            headers: {
+              Authorization: "Bearer e993014b8b85736546e8b35171d3b072",
+            },
+          }
         );
         console.log(response);
       } catch (error) {
@@ -391,6 +395,6 @@ createApp({
   mounted() {
     setTimeout(() => {
       this.cargaInicial = true;
-    }, 1000);
+    }, 450);
   },
 }).mount("#app");
