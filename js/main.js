@@ -180,6 +180,7 @@ createApp({
     const archivoSituacionFiscal = ref(null);
     const archivoActaNacimiento = ref(null);
     const archivoCedula = ref(null);
+    const mensajeError = ref("");
     // ******* //
     // VALIDACION TODO FORMULARIO
     const formularioInvalido = computed(() => {
@@ -203,7 +204,8 @@ createApp({
     });
     const validarFormulario = async () => {
       if (!formularioInvalido.value) {
-        console.log("Faltan valores que completar");
+        const modal = new bootstrap.Modal(document.getElementById('modalInformacion'));
+        modal.show();
       } else {
         await enviarForm();
       }
@@ -298,9 +300,16 @@ createApp({
             },
           }
         );
-        console.log(response);
+        const { status, mensaje } = response.data;
+        if (Number(status) != 200) {
+          mensajeError.value = mensaje;
+          const modal = new bootstrap.Modal(document.getElementById('modalError'));
+          modal.show();  
+        }
       } catch (error) {
-        console.error(error);
+        mensajeError.value = error.response.data.error ?? '';
+        const modal = new bootstrap.Modal(document.getElementById('modalError'));
+        modal.show();
       } finally {
         cargaInicial.value = true;
       }
@@ -390,6 +399,7 @@ createApp({
       archivoCedula,
       validarFormulario,
       enviarForm,
+      mensajeError,
     };
   },
   mounted() {

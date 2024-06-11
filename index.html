@@ -402,6 +402,48 @@
           </div>
         </div>
       </form>
+
+      <!-- Button trigger modal -->
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        Launch demo modal
+      </button>
+
+      <!-- SECCION MODALES -->
+      <!-- Modal informacion incompleta -->
+      <div class="modal fade" id="modalInformacion" tabindex="-1" aria-labelledby="informacionModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="informacionModalLabel">Formulario incompleto</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+              Falta información que capturar, verifique su información nuevamente.
+            </div>
+            <div class="modal-footer justify-content-center">
+              <button type="button" class="btn btn-warning" data-bs-dismiss="modal">CERRAR</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Modal informacion error -->
+      <div class="modal fade" id="modalError" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="errorModalLabel">Ocurrió un error</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+              Oops!! {{ mensajeError || '' }}
+            </div>
+            <div class="modal-footer justify-content-center">
+              <button type="button" class="btn btn-danger" data-bs-dismiss="modal">CERRAR</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <script src="bootstrap/js/bootstrap.bundle.min.js"
