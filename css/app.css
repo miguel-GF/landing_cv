@@ -12,6 +12,22 @@
   z-index: 9999;
 }
 
+.background-container-titulo {
+  background: #151751;
+}
+
 .color-error {
-  color: red;
+  color: #f2e230;
+}
+
+.form-label, .color-label {
+  color: white;
+}
+
+.parallax {
+  background-image: url('/images/formulario_background_cv.jpg');
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
