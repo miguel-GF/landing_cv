@@ -8,6 +8,7 @@
   <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link href="css/app.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 
 <body>
@@ -67,8 +68,8 @@
                 <span v-if="!paisValido" class="color-error">Ingrese el país</span>
               </div>
             </div>
-            <!-- ESTADO CIVIL -->
             <div class="row pt-2 pb-3">
+              <!-- ESTADO CIVIL -->
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="estado_civil" class="form-label">Estado Civil *</label>
                 <select required class="form-select" id="estado_civil" placeholder="" v-model="estadoCivil"
@@ -79,6 +80,7 @@
                 </select>
                 <span v-if="!estadoCivilValido" class="color-error">Ingrese su estado civil</span>
               </div>
+              <!-- GENERO -->
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="genero" class="form-label">Género *</label>
                 <select required class="form-select" id="genero" placeholder="" v-model="genero"
@@ -87,6 +89,11 @@
                   <option value="mujer">Mujer</option>
                 </select>
                 <span v-if="!generoValido" class="color-error">Ingrese su género</span>
+              </div>
+              <!-- CORREO INSTITUCIONAL -->
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="correo_institucional" class="form-label">Correo institucional</label>
+                <input type="email" class="form-control" id="correo_institucional" placeholder="" v-model="correoInstitucional">
               </div>
             </div>
             <div class="row pt-2 pb-3">
@@ -113,7 +120,7 @@
                   placeholder="https://www.facebook.com/nombre-perfil/" v-model="facebook">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
-                <label for="telefono" class="form-label">Teléfono fijo</label>
+                <label for="telefono" class="form-label">Teléfono Fijo</label>
                 <input type="tel" class="form-control" id="telefono" placeholder="" v-model="telefono">
               </div>
             </div>
@@ -175,21 +182,33 @@
               <div class="col-12 pb-2">
                 <span class="h5 color-label">DATOS FISCALES</span>
               </div>
-              <div class="mb-3 mb-md-0 col-xs-12 col-sm-6 col-md-3">
+              <div class="mb-3 mb-md-0 col-xs-12 col-sm-6 col-md-6">
                 <label for="rfc" class="form-label">RFC</label>
                 <input type="text" class="form-control" id="rfc" placeholder="" v-model="rfc">
               </div>
-              <div class="mb-3 mb-md-0 col-xs-12 col-sm-6 col-md-3">
+              <div class="mb-3 mb-md-0 col-xs-12 col-sm-6 col-md-6">
                 <label for="curp" class="form-label">CURP</label>
                 <input type="text" class="form-control" id="curp" placeholder="" v-model="curp">
               </div>
-              <div class="mb-3 mb-md-0 col-xs-12 col-sm-6 col-md-3">
+            </div>
+            <div class="row pt-2 pb-3">
+              <div class="mb-3 mb-md-0 col-xs-12 col-sm-12 col-md-4">
                 <label for="clabe" class="form-label">CLABE Interbancaria</label>
                 <input type="text" class="form-control" id="clabe" placeholder="" v-model="clabe">
               </div>
-              <div class="mb-3 mb-md-0 col-xs-12 col-sm-6 col-md-3">
+              <div class="mb-3 mb-md-0 col-xs-12 col-sm-12 col-md-4">
                 <label for="banco" class="form-label">Banco</label>
                 <input type="text" class="form-control" id="banco" placeholder="" v-model="banco">
+              </div>
+              <div class="mb-3 mb-md-0 col-11 col-xs-11 col-md-3">
+                <label for="archivo_cv" class="form-label">Fotografía de cuenta - {{ archivoCuentaBancaria == null ? 'Sin Adjunto' : 'Archivo Adjunto'}}</label>
+                <input class="form-control" accept=".jpg, .jpeg, .png" type="file" id="archivo_cuenta_bancaria"
+                  @change="e => archivoCuentaBancaria = e.target.files[0]">
+              </div>
+              <div class="mb-3 mb-md-0 col-1 col-xs-1 col-md-1 my-auto">
+                <button type="button" class="btn btn-light btn-xs" :disabled="archivoCuentaBancaria == null" @click="limpiarArchivo('cuenta_bancaria')">
+                  <i class="bi bi-trash3 text-black"></i>
+                </button>
               </div>
             </div>
             <!-- DIRECCION FISCAL -->
@@ -305,10 +324,15 @@
                   PDF)</span>
               </div>
               <!-- CV -->
-              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
-                <label for="archivo_cv" class="form-label">No Hay Archivo Adjuntado</label>
+              <div class="mb-3 mb-md-0 col-11 col-xs-11 col-md-4">
+                <label for="archivo_cv" class="form-label">{{ archivoCurriculum == null ? 'No Hay Archivo Adjuntado' : 'Archivo Adjunto' }}</label>
                 <input class="form-control" accept=".pdf" type="file" id="archivo_cv"
                   @change="e => archivoCurriculum = e.target.files[0]">
+              </div>
+              <div class="mb-3 mb-md-0 col-1 col-xs-1 col-md-1 my-auto">
+                <button type="button" class="btn btn-light btn-xs" :disabled="archivoCurriculum == null" @click="limpiarArchivo('curriculum')">
+                  <i class="bi bi-trash3 text-black"></i>
+                </button>
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="descripcion_cv" class="form-label">Currículum</label>
@@ -318,10 +342,15 @@
             </div>
             <!-- INE -->
             <div class="row pt-2 pb-3">
-              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
-                <label for="archivo_ine" class="form-label">No Hay Archivo Adjuntado</label>
+              <div class="mb-3 mb-md-0 col-11 col-xs-11 col-md-4">
+                <label for="archivo_ine" class="form-label">{{ archivoIne == null ? 'No Hay Archivo Adjuntado' : 'Archivo Adjunto' }}</label>
                 <input class="form-control" accept=".pdf" type="file" id="archivo_ine"
                   @change="e => archivoIne = e.target.files[0]">
+              </div>
+              <div class="mb-3 mb-md-0 col-1 col-xs-1 col-md-1 my-auto">
+                <button type="button" class="btn btn-light btn-xs" :disabled="archivoIne == null" @click="limpiarArchivo('ine')">
+                  <i class="bi bi-trash3 text-black"></i>
+                </button>
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="descripcion_ine" class="form-label">INE</label>
@@ -331,10 +360,15 @@
             </div>
             <!-- CURP -->
             <div class="row pt-2 pb-3">
-              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
-                <label for="archivo_curp" class="form-label">No Hay Archivo Adjuntado</label>
+              <div class="mb-3 mb-md-0 col-11 col-xs-11 col-md-4">
+                <label for="archivo_curp" class="form-label">{{ archivoCurp == null ? 'No Hay Archivo Adjuntado' : 'Archivo Adjunto' }}</label>
                 <input class="form-control" accept=".pdf" type="file" id="archivo_curp"
                   @change="e => archivoCurp = e.target.files[0]">
+              </div>
+              <div class="mb-3 mb-md-0 col-1 col-xs-1 col-md-1 my-auto">
+                <button type="button" class="btn btn-light btn-xs" :disabled="archivoCurp == null" @click="limpiarArchivo('curp')">
+                  <i class="bi bi-trash3 text-black"></i>
+                </button>
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="descripcion_curp" class="form-label">CURP</label>
@@ -344,10 +378,15 @@
             </div>
             <!-- COMPROBANTE DOMICILIO -->
             <div class="row pt-2 pb-3">
-              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
-                <label for="archivo_domicilio" class="form-label">No Hay Archivo Adjuntado</label>
+              <div class="mb-3 mb-md-0 col-11 col-xs-11 col-md-4">
+                <label for="archivo_domicilio" class="form-label">{{ archivoDomicilio == null ? 'No Hay Archivo Adjuntado' : 'Archivo Adjunto' }}</label>
                 <input class="form-control" accept=".pdf" type="file" id="archivo_domicilio"
                   @change="e => archivoDomicilio = e.target.files[0]">
+              </div>
+              <div class="mb-3 mb-md-0 col-1 col-xs-1 col-md-1 my-auto">
+                <button type="button" class="btn btn-light btn-xs" :disabled="archivoDomicilio == null" @click="limpiarArchivo('domicilio')">
+                  <i class="bi bi-trash3 text-black"></i>
+                </button>
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="descripcion_domicilio" class="form-label">Comprobante Domiciliario</label>
@@ -358,10 +397,15 @@
             </div>
             <!-- CONSTANCIA DE SITUACIÓN FISCAL -->
             <div class="row pt-2 pb-3">
-              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
-                <label for="archivo_situacion_fiscal" class="form-label">No Hay Archivo Adjuntado</label>
+              <div class="mb-3 mb-md-0 col-11 col-xs-11 col-md-4">
+                <label for="archivo_situacion_fiscal" class="form-label">{{ archivoSituacionFiscal == null ? 'No Hay Archivo Adjuntado' : 'Archivo Adjunto' }}</label>
                 <input class="form-control" accept=".pdf" type="file" id="archivo_situacion_fiscal"
                   @change="e => archivoSituacionFiscal = e.target.files[0]">
+              </div>
+              <div class="mb-3 mb-md-0 col-1 col-xs-1 col-md-1 my-auto">
+                <button type="button" class="btn btn-light btn-xs" :disabled="archivoSituacionFiscal == null" @click="limpiarArchivo('situacion_fiscal')">
+                  <i class="bi bi-trash3 text-black"></i>
+                </button>
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="descripcion_situacion_fiscal" class="form-label">Comprobante de Situación Fiscal</label>
@@ -371,10 +415,15 @@
             </div>
             <!-- ACTA DE NACIMIENTO -->
             <div class="row pt-2 pb-3">
-              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
-                <label for="archivo_acta" class="form-label">No Hay Archivo Adjuntado</label>
+              <div class="mb-3 mb-md-0 col-11 col-xs-11 col-md-4">
+                <label for="archivo_acta" class="form-label">{{ archivoActaNacimiento == null ? 'No Hay Archivo Adjuntado' : 'Archivo Adjunto' }}</label>
                 <input class="form-control" accept=".pdf" type="file" id="archivo_acta"
                   @change="e => archivoActaNacimiento = e.target.files[0]">
+              </div>
+              <div class="mb-3 mb-md-0 col-1 col-xs-1 col-md-1 my-auto">
+                <button type="button" class="btn btn-light btn-xs" :disabled="archivoActaNacimiento == null" @click="limpiarArchivo('nacimiento')">
+                  <i class="bi bi-trash3 text-black"></i>
+                </button>
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="descripcion_acta" class="form-label">Acta de Nacimiento</label>
@@ -384,10 +433,15 @@
             </div>
             <!-- CÉDULA PROFESIONAL -->
             <div class="row pt-2 pb-3">
-              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
-                <label for="archivo_cedula" class="form-label">No Hay Archivo Adjuntado</label>
+              <div class="mb-3 mb-md-0 col-11 col-xs-11 col-md-4">
+                <label for="archivo_cedula" class="form-label">{{ archivoCedula == null ? 'No Hay Archivo Adjuntado' : 'Archivo Adjunto' }}</label>
                 <input class="form-control" accept=".pdf" type="file" id="archivo_cedula"
                   @change="e => archivoCedula = e.target.files[0]">
+              </div>
+              <div class="mb-3 mb-md-0 col-1 col-xs-1 col-md-1 my-auto">
+                <button type="button" class="btn btn-light btn-xs" :disabled="archivoCedula == null" @click="limpiarArchivo('cedula')">
+                  <i class="bi bi-trash3 text-black"></i>
+                </button>
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="descripcion_cedula" class="form-label">Cédula Profesional</label>

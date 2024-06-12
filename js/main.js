@@ -67,6 +67,7 @@ createApp({
       correoValido.value = validacionGeneral(correo.value);
       return correoValido.value;
     };
+    const correoInstitucional = ref("");
     // DATOS CELULAR
     const celular = ref("");
     const celularValido = ref(true);
@@ -180,8 +181,9 @@ createApp({
     const archivoSituacionFiscal = ref(null);
     const archivoActaNacimiento = ref(null);
     const archivoCedula = ref(null);
-    const mensajeError = ref("");
+    const archivoCuentaBancaria = ref(null);
     // ******* //
+    const mensajeError = ref("");
     // VALIDACION TODO FORMULARIO
     const formularioInvalido = computed(() => {
       return (
@@ -204,10 +206,69 @@ createApp({
     });
     const validarFormulario = async () => {
       if (!formularioInvalido.value) {
-        const modal = new bootstrap.Modal(document.getElementById('modalInformacion'));
+        const modal = new bootstrap.Modal(
+          document.getElementById("modalInformacion")
+        );
         modal.show();
       } else {
         await enviarForm();
+      }
+    };
+    const limpiarArchivo = (tipo) => {
+      switch (tipo) {
+        case "curriculum":
+          const refArchivoCV = document.getElementById("archivo_cv");
+          refArchivoCV.value = "";
+          archivoCurriculum.value = null;
+          descripcionCurriculum.value = "";
+          break;
+        case "ine":
+          const refArchivoIne = document.getElementById("archivo_ine");
+          refArchivoIne.value = "";
+          archivoIne.value = null;
+          descripcionIne.value = "";
+          break;
+        case "curp":
+          const refArchivoCurp = document.getElementById("archivo_curp");
+          refArchivoCurp.value = "";
+          archivoCurp.value = null;
+          descripcionCurp.value = "";
+          break;
+        case "domicilio":
+          const refArchivoDomicilio =
+            document.getElementById("archivo_domicilio");
+          refArchivoDomicilio.value = "";
+          archivoDomicilio.value = null;
+          descripcionDomicilio.value = "";
+          break;
+        case "situacion_fiscal":
+          const refArchivoSituacionFiscal = document.getElementById(
+            "archivo_situacion_fiscal"
+          );
+          refArchivoSituacionFiscal.value = "";
+          archivoSituacionFiscal.value = null;
+          descripcionSituacionFiscal.value = "";
+          break;
+        case "nacimiento":
+          const refArchivoActa = document.getElementById("archivo_acta");
+          refArchivoActa.value = "";
+          archivoActaNacimiento.value = null;
+          descripcionActaNacimiento.value = "";
+          break;
+        case "cedula":
+          const refArchivoCedula = document.getElementById("archivo_cedula");
+          refArchivoCedula.value = "";
+          archivoCedula.value = null;
+          descripcionCedula.value = "";
+          break;
+        case "cuenta_bancaria":
+          const refArchivoCuentaBancaria = document.getElementById("archivo_cuenta_bancaria");
+          refArchivoCuentaBancaria.value = "";
+          archivoCuentaBancaria.value = null;
+          break;
+
+        default:
+          break;
       }
     };
     const enviarForm = async () => {
@@ -222,6 +283,7 @@ createApp({
         formData.append("estadoCivil", estadoCivil.value);
         formData.append("genero", genero.value);
         formData.append("correo", correo.value);
+        formData.append("correoInstitucional", correoInstitucional.value);
         formData.append("celular", celular.value);
         formData.append("facebook", facebook.value);
         formData.append("telefono", telefono.value);
@@ -291,6 +353,9 @@ createApp({
         if (archivoCedula.value) {
           formData.append("archivoCedula", archivoCedula.value);
         }
+        if (archivoCuentaBancaria.value) {
+          formData.append("archivoCuentaBancaria", archivoCuentaBancaria.value);
+        }
         const response = await axios.post(
           "http://127.0.0.1:8000/api/v1/docente/cv",
           formData,
@@ -303,16 +368,22 @@ createApp({
         const { status, mensaje } = response.data;
         if (Number(status) != 200) {
           mensajeError.value = mensaje;
-          const modal = new bootstrap.Modal(document.getElementById('modalError'));
-          modal.show();  
+          const modal = new bootstrap.Modal(
+            document.getElementById("modalError")
+          );
+          modal.show();
         } else {
-          const modal = new bootstrap.Modal(document.getElementById('modalExito'));
+          const modal = new bootstrap.Modal(
+            document.getElementById("modalExito")
+          );
           modal.show();
           limpiarDatos();
         }
       } catch (error) {
-        mensajeError.value = error.response.data.error ?? '';
-        const modal = new bootstrap.Modal(document.getElementById('modalError'));
+        mensajeError.value = error.response.data.error ?? "";
+        const modal = new bootstrap.Modal(
+          document.getElementById("modalError")
+        );
         modal.show();
       } finally {
         cargaInicial.value = true;
@@ -335,6 +406,7 @@ createApp({
       generoValido.value = true;
       correo.value = "";
       correoValido.value = true;
+      correoInstitucional.value = "";
       celular.value = "";
       celularValido.value = "";
       facebook.value = "";
@@ -371,21 +443,15 @@ createApp({
       alergias.value = "";
       tipoSangre.value = "";
       informacionAdicional.value = "";
-      descripcionCurriculum.value = "";
-      descripcionIne.value = "";
-      descripcionCurp.value = "";
-      descripcionDomicilio.value = "";
-      descripcionSituacionFiscal.value = "";
-      descripcionActaNacimiento.value = "";
-      descripcionCedula.value = "";
-      archivoCurriculum.value = null;
-      archivoIne.value = null;
-      archivoCurp.value = null;
-      archivoDomicilio.value = null;
-      archivoSituacionFiscal.value = null;
-      archivoActaNacimiento.value = null;
-      archivoCedula.value = null;
       mensajeError.value = "";
+      limpiarArchivo('curriculum');
+      limpiarArchivo('ine');
+      limpiarArchivo('curp');
+      limpiarArchivo('domicilio');
+      limpiarArchivo('situacion_fiscal');
+      limpiarArchivo('nacimiento');
+      limpiarArchivo('cedula');
+      limpiarArchivo('cuenta_bancaria');
     };
     return {
       cargaInicial,
@@ -413,6 +479,7 @@ createApp({
       correo,
       correoValido,
       validateCorreo,
+      correoInstitucional,
       celular,
       celularValido,
       validateCelular,
@@ -470,9 +537,11 @@ createApp({
       archivoSituacionFiscal,
       archivoActaNacimiento,
       archivoCedula,
+      archivoCuentaBancaria,
       validarFormulario,
       enviarForm,
       mensajeError,
+      limpiarArchivo,
     };
   },
   mounted() {
