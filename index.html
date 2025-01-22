@@ -92,7 +92,7 @@
               </div>
               <!-- CORREO INSTITUCIONAL -->
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
-                <label for="correo_institucional" class="form-label">Correo institucional</label>
+                <label for="correo_institucional" class="form-label">Correo Institucional</label>
                 <input type="email" class="form-control" id="correo_institucional" placeholder="" v-model="correoInstitucional">
               </div>
             </div>
@@ -201,7 +201,7 @@
                 <input type="text" class="form-control" id="banco" placeholder="" v-model="banco">
               </div>
               <div class="mb-3 mb-md-0 col-11 col-xs-11 col-md-3">
-                <label for="archivo_cv" class="form-label">Fotografía de cuenta - {{ archivoCuentaBancaria == null ? 'Sin Adjunto' : 'Archivo Adjunto'}}</label>
+                <label for="archivo_cv" class="form-label">Fotografía de Cuenta - {{ archivoCuentaBancaria == null ? 'Sin Adjunto' : 'Archivo Adjunto'}}</label>
                 <input class="form-control" accept=".jpg, .jpeg, .png" type="file" id="archivo_cuenta_bancaria"
                   @change="e => archivoCuentaBancaria = e.target.files[0]">
               </div>
@@ -286,7 +286,7 @@
                 <span class="h5 color-label">INFORMACIÓN COMPLEMENTARIA</span>
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
-                <label for="enfermedades" class="form-label">Enfermedad(es) crónica(s)</label>
+                <label for="enfermedades" class="form-label">Enfermedad(es) Crónica(s)</label>
                 <input type="text" class="form-control" id="enfermedades" placeholder="" v-model="enfermedades">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
@@ -309,7 +309,7 @@
               </div>
               <div class="row row pt-2 pb-3">
                 <div class="mb-3 mb-md-0 col-xs-12 col-md-12">
-                  <label for="nombre" class="form-label">Información adicional</label>
+                  <label for="nombre" class="form-label">Información Adicional</label>
                   <textarea class="form-control" id="informacionAdicional" rows="3" v-model="informacionAdicional"
                     placeholder="Escriba algo que quiera añadir o mencionar para completar su información."></textarea>
                 </div>
@@ -336,7 +336,7 @@
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="descripcion_cv" class="form-label">Currículum</label>
-                <input type="text" class="form-control" id="descripcion_cv" placeholder="Descripción del curriculum"
+                <input type="text" class="form-control" id="descripcion_cv" placeholder="Descripción del Curriculum"
                   :disabled="archivoCurriculum == null" v-model="descripcionCurriculum">
               </div>
             </div>
@@ -391,7 +391,7 @@
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="descripcion_domicilio" class="form-label">Comprobante Domiciliario</label>
                 <input type="text" class="form-control" id="descripcion_domicilio"
-                  placeholder="Descripción del comprobante" :disabled="archivoDomicilio == null"
+                  placeholder="Descripción del Comprobante" :disabled="archivoDomicilio == null"
                   v-model="descripcionDomicilio">
               </div>
             </div>
