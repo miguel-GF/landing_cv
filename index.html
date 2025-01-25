@@ -92,23 +92,25 @@
               </div>
               <!-- CORREO INSTITUCIONAL -->
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
-                <label for="correo_institucional" class="form-label">Correo Institucional</label>
-                <input type="email" class="form-control" id="correo_institucional" placeholder="" v-model="correoInstitucional">
+                <label for="correo_institucional" class="form-label">Correo Institucional *</label>
+                <input type="email" required class="form-control" id="correo_institucional" placeholder="" v-model="correoInstitucional"
+                @input="validateCorreo" maxlength="150">
+                <span v-if="!correoValido" class="color-error">Ingrese su correo electrónico</span>
               </div>
             </div>
             <div class="row pt-2 pb-3">
               <!-- CORREO -->
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
-                <label for="correo" class="form-label">Correo Electrónico *</label>
-                <input type="email" required class="form-control" id="correo" placeholder="" v-model="correo"
-                  @input="validateCorreo">
-                <span v-if="!correoValido" class="color-error">Ingrese su correo electrónico</span>
+                <label for="correo" class="form-label">Correo Electrónico</label>
+                <input type="email" class="form-control" id="correo" placeholder="" v-model="correo" maxlength="150">
               </div>
               <!-- CELULAR -->
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
-                <label for="celular" class="form-label">Celular * (###-###-####)</label>
-                <input type="tel" required class="form-control" id="celular" placeholder="###-###-####"
-                  pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" v-model="celular" @input="validateCelular">
+                <label for="celular" class="form-label">Celular *</label>
+                <!-- pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" -->
+                <!-- placeholder="###-###-####" -->
+                <input type="tel" required class="form-control" id="celular" 
+                   v-model="celular" @input="validateCelular" maxlength="15">
                 <span v-if="!celularValido" class="color-error">Ingrese su número de celular</span>
               </div>
             </div>
@@ -121,7 +123,7 @@
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="telefono" class="form-label">Teléfono Fijo</label>
-                <input type="tel" class="form-control" id="telefono" placeholder="" v-model="telefono">
+                <input type="tel" class="form-control" id="telefono" placeholder="" v-model="telefono" maxlength="15">
               </div>
             </div>
             <!-- DOMICILIO -->
@@ -138,26 +140,26 @@
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="domicilio_no_exterior" class="form-label">Número Exterior *</label>
                 <input type="text" required class="form-control" id="domicilio_no_exterior" placeholder=""
-                  v-model="domicilioNoExterior" @input="validateDomicilioNoExterior">
+                  v-model="domicilioNoExterior" @input="validateDomicilioNoExterior" maxlength="10">
                 <span v-if="!domicilioNoExteriorValido" class="color-error">Ingrese número exterior del domicilio</span>
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="domicilio_no_interior" class="form-label">Número Interior</label>
                 <input type="text" class="form-control" id="domicilio_no_interior" placeholder="S/N"
-                  v-model="domicilioNoInterior">
+                  v-model="domicilioNoInterior" maxlength="10">
               </div>
             </div>
             <div class="row pt-2 pb-3">
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="domicilio_colonia" class="form-label">Colonia *</label>
                 <input type="text" required class="form-control" id="domicilio_colonia" placeholder=""
-                  v-model="domicilioColonia" @input="validateDomicilioColonia">
+                  v-model="domicilioColonia" @input="validateDomicilioColonia" maxlength="40">
                 <span v-if="!domicilioColoniaValida" class="color-error">Ingrese la colonia del domicilio</span>
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="domicilio_ciudad" class="form-label">Ciudad *</label>
                 <input type="text" required class="form-control" id="domicilio_ciudad" placeholder=""
-                  v-model="domicilioCiudad" @input="validateDomicilioCiudad">
+                  v-model="domicilioCiudad" @input="validateDomicilioCiudad" maxlength="40">
                 <span v-if="!domicilioCiudadValida" class="color-error">Ingrese la ciudad del domicilio</span>
               </div>
             </div>
@@ -165,7 +167,7 @@
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="domicilio_estado" class="form-label">Estado *</label>
                 <input type="text" required class="form-control" id="domicilio_estado" placeholder=""
-                  v-model="domicilioEstado" @input="validateDomicilioEstado">
+                  v-model="domicilioEstado" @input="validateDomicilioEstado" maxlength="40">
                 <span v-if="!domicilioEstadoValido" class="color-error">Ingrese el estado del domicilio</span>
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
@@ -184,21 +186,22 @@
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-sm-6 col-md-6">
                 <label for="rfc" class="form-label">RFC</label>
-                <input type="text" class="form-control" id="rfc" placeholder="" v-model="rfc">
+                <input type="text" class="form-control" id="rfc" placeholder="" v-model="rfc" maxlength="15">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-sm-6 col-md-6">
                 <label for="curp" class="form-label">CURP</label>
-                <input type="text" class="form-control" id="curp" placeholder="" v-model="curp">
+                <input type="text" class="form-control" id="curp" placeholder="" v-model="curp" maxlength="25">
+                GOFM890613HPLNLG04
               </div>
             </div>
             <div class="row pt-2 pb-3">
               <div class="mb-3 mb-md-0 col-xs-12 col-sm-12 col-md-4">
                 <label for="clabe" class="form-label">CLABE Interbancaria</label>
-                <input type="text" class="form-control" id="clabe" placeholder="" v-model="clabe">
+                <input type="text" class="form-control" id="clabe" placeholder="" v-model="clabe" maxlength="50">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-sm-12 col-md-4">
                 <label for="banco" class="form-label">Banco</label>
-                <input type="text" class="form-control" id="banco" placeholder="" v-model="banco">
+                <input type="text" class="form-control" id="banco" placeholder="" v-model="banco" maxlength="50">
               </div>
               <div class="mb-3 mb-md-0 col-11 col-xs-11 col-md-3">
                 <label for="archivo_cv" class="form-label">Fotografía de Cuenta - {{ archivoCuentaBancaria == null ? 'Sin Adjunto' : 'Archivo Adjunto'}}</label>
@@ -223,28 +226,28 @@
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="fiscal_no_exterior" class="form-label">Número Exterior</label>
                 <input type="text" class="form-control" id="fiscal_no_exterior" placeholder="S/N"
-                  v-model="fiscalNoExterior">
+                  v-model="fiscalNoExterior" maxlength="10">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="fiscal_no_interior" class="form-label">Número Interior</label>
                 <input type="text" class="form-control" id="fiscal_no_interior" placeholder=""
-                  v-model="fiscalNoInterior">
+                  v-model="fiscalNoInterior" maxlength="10">
               </div>
             </div>
             <div class="row pt-2 pb-3">
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="fiscal_colonia" class="form-label">Colonia</label>
-                <input type="text" class="form-control" id="fiscal_colonia" placeholder="" v-model="fiscalColonia">
+                <input type="text" class="form-control" id="fiscal_colonia" placeholder="" v-model="fiscalColonia" maxlength="40">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="fiscal_ciudad" class="form-label">Ciudad</label>
-                <input type="text" class="form-control" id="fiscal_ciudad" placeholder="" v-model="fiscalCiudad">
+                <input type="text" class="form-control" id="fiscal_ciudad" placeholder="" v-model="fiscalCiudad" maxlength="40">
               </div>
             </div>
             <div class="row pt-2 pb-3">
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="fiscal_estado" class="form-label">Estado</label>
-                <input type="text" class="form-control" id="fiscal_estado" placeholder="" v-model="fiscalEstado">
+                <input type="text" class="form-control" id="fiscal_estado" placeholder="" v-model="fiscalEstado" maxlength="40">
               </div>
               <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
                 <label for="fiscal_cp" class="form-label">Código Postal (#####)</label>
@@ -338,6 +341,25 @@
                 <label for="descripcion_cv" class="form-label">Currículum</label>
                 <input type="text" class="form-control" id="descripcion_cv" placeholder="Descripción del Curriculum"
                   :disabled="archivoCurriculum == null" v-model="descripcionCurriculum">
+              </div>
+            </div>
+            <!-- PLANEACION ACADEMICA -->
+            <div class="row pt-2 pb-3">
+              <div class="mb-3 mb-md-0 col-11 col-xs-11 col-md-4">
+                <label for="archivo_planeacion_academica" class="form-label">{{ archivoPlaneacionAcademica == null ? 'No Hay Archivo Adjuntado' : 'Archivo Adjunto' }}</label>
+                <input class="form-control" accept=".pdf" type="file" id="archivo_planeacion_academica"
+                  @change="e => archivoPlaneacionAcademica = e.target.files[0]">
+              </div>
+              <div class="mb-3 mb-md-0 col-1 col-xs-1 col-md-1 my-auto">
+                <button type="button" class="btn btn-light btn-xs" :disabled="archivoPlaneacionAcademica == null" @click="limpiarArchivo('planeacion_academica')">
+                  <i class="bi bi-trash3 text-black"></i>
+                </button>
+              </div>
+              <div class="mb-3 mb-md-0 col-xs-12 col-md-4">
+                <label for="descripcion_planeacion_academica" class="form-label">Planeación Académica</label>
+                <input type="text" class="form-control" id="descripcion_planeacion_academica"
+                  placeholder="Descripción de la Planeación Académica"   :disabled="archivoPlaneacionAcademica == null"
+                  v-model="descripcionPlaneacionAcademica">
               </div>
             </div>
             <!-- INE -->

@@ -63,11 +63,11 @@ createApp({
     // DATOS CORREO
     const correo = ref("");
     const correoValido = ref(true);
+    const correoInstitucional = ref("");
     const validateCorreo = () => {
-      correoValido.value = validacionGeneral(correo.value);
+      correoValido.value = validacionGeneral(correoInstitucional.value);
       return correoValido.value;
     };
-    const correoInstitucional = ref("");
     // DATOS CELULAR
     const celular = ref("");
     const celularValido = ref(true);
@@ -173,6 +173,7 @@ createApp({
     const descripcionSituacionFiscal = ref("");
     const descripcionActaNacimiento = ref("");
     const descripcionCedula = ref("");
+    const descripcionPlaneacionAcademica = ref("");
     // ARCHIVOS
     const archivoCurriculum = ref(null);
     const archivoIne = ref(null);
@@ -182,6 +183,7 @@ createApp({
     const archivoActaNacimiento = ref(null);
     const archivoCedula = ref(null);
     const archivoCuentaBancaria = ref(null);
+    const archivoPlaneacionAcademica = ref(null);
     // ******* //
     const mensajeError = ref("");
     // VALIDACION TODO FORMULARIO
@@ -266,6 +268,11 @@ createApp({
           refArchivoCuentaBancaria.value = "";
           archivoCuentaBancaria.value = null;
           break;
+        case "planeacion_academica":
+          const refArchivoPlaneacionAcademica = document.getElementById("archivo_planeacion_academica");
+          refArchivoPlaneacionAcademica.value = "";
+          archivoPlaneacionAcademica.value = null;
+          break;
 
         default:
           break;
@@ -329,6 +336,7 @@ createApp({
           descripcionActaNacimiento.value
         );
         formData.append("descripcionCedula", descripcionCedula.value);
+        formData.append("descripcionPlaneacionAcademica", descripcionPlaneacionAcademica.value);
         if (archivoCurriculum.value) {
           formData.append("archivoCurriculum", archivoCurriculum.value);
         }
@@ -352,6 +360,9 @@ createApp({
         }
         if (archivoCedula.value) {
           formData.append("archivoCedula", archivoCedula.value);
+        }
+        if (archivoPlaneacionAcademica.value) {
+          formData.append("archivoPlaneacionAcademica", archivoPlaneacionAcademica.value);
         }
         if (archivoCuentaBancaria.value) {
           formData.append("archivoCuentaBancaria", archivoCuentaBancaria.value);
@@ -452,6 +463,7 @@ createApp({
       limpiarArchivo('nacimiento');
       limpiarArchivo('cedula');
       limpiarArchivo('cuenta_bancaria');
+      limpiarArchivo('planeacion_academica');
     };
     return {
       cargaInicial,
@@ -530,6 +542,7 @@ createApp({
       descripcionSituacionFiscal,
       descripcionActaNacimiento,
       descripcionCedula,
+      descripcionPlaneacionAcademica,
       archivoCurriculum,
       archivoIne,
       archivoCurp,
@@ -538,6 +551,7 @@ createApp({
       archivoActaNacimiento,
       archivoCedula,
       archivoCuentaBancaria,
+      archivoPlaneacionAcademica,
       validarFormulario,
       enviarForm,
       mensajeError,
