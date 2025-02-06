@@ -8,7 +8,7 @@ export function validacionGeneral(val) {
 export function validacionNombre(val) {
   const validacionVacia = validacionGeneral(val);
   if (validacionVacia) {
-    if (!(/^[a-zA-Z ]+$/.test(val.trim()))) {
+    if (!(/^[a-zA-ZñÑáéíóúÁÉÍÓÚ ]+$/.test(val.trim()))) {
       return false;
     }
   }
