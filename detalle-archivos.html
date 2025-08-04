@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Detalle del Docente - IPES</title>
+
+  <!-- Bootstrap -->
+  <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+  <link href="css/app.css" rel="stylesheet">
+</head>
+<body>
+  <!-- Navbar de navegación -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="index.html">IPES</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarIPES" aria-controls="navbarIPES" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <div class="collapse navbar-collapse" id="navbarIPES">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">
+            <i class="bi bi-pencil-square me-1"></i> Captura Curriculum
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="ver-curriculums.html">
+            <i class="bi bi-folder2-open me-1"></i> Ver Curriculums
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  <div id="app">
+    <div class="container-fluid py-5 px-2 background-container-titulo">
+      <div class="container text-center">
+        <h1 class="text-white">{{docente?.nombre ? docente.nombre : ''}}</h1>
+        <h3 class="text-white">De click en algún documento para descargarlo.</h3>
+      </div>
+    </div>
+    <div class="container-full" v-if="!cargaInicial">
+      <div class="custom-loader"></div>
+    </div>
+    <!-- Botón de regreso -->
+     <div class="container py-3">
+       <div class="mb-4 text-right">
+         <a href="ver-curriculums.html" class="btn btn-outline-secondary">
+           <i class="bi bi-arrow-left"></i> Regresar
+         </a>
+       </div>
+       <!-- Estado: Error -->
+       <div v-if="error" class="alert alert-danger text-center">
+         {{ error }}
+       </div>
+   
+       <!-- Estado: Detalle -->
+       <div v-if="docente" class="card shadow">
+         <div class="card-body">
+           <h3 class="card-title">{{ docente.nombre }}</h3>
+           <p class="text-muted">ID del Curriculum: {{ docente.curriculum_docente_id }}</p>
+   
+           <hr>
+   
+           <h5>Documentos</h5>
+           <ul v-if="docente.documentos && docente.documentos.length" class="list-group">
+             <li v-for="doc in docente.documentos" :key="doc.curriculum_docente_archivo_id" class="list-group-item">
+               <div>
+                 <!-- Clic con Vue para descargar -->
+                 <a
+                   href="#"
+                   @click.prevent="descargarDocumento(doc.curriculum_docente_archivo_id, doc.nombre)"
+                   class="fw-bold text-decoration-none"
+                 >
+                   {{ doc.nombre }}
+                 </a>
+                 <div class="text-muted small">{{ doc.tipo }} - {{ doc.descripcion }}</div>
+               </div>
+             </li>
+           </ul>
+           <div v-else class="text-muted">No hay documentos disponibles.</div>
+         </div>
+       </div>
+
+     </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/vue3.js"></script>
+  <script src="js/axios.min.js"></script>
+  <script src="js/detalle.js"></script>
+</body>
+</html>
