@@ -4,15 +4,48 @@ axios.defaults.baseURL = "http://127.0.0.1:8000/api/v1/"; // <--- Ajusta tu ruta
 axios.defaults.headers.common["Authorization"] = "Bearer e993014b8b85736546e8b35171d3b072"; // <--- Pon tu token real aquí
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
+const CLAVE_SESION_CURRICULUMS = "ipes_curriculums_sesion";
+const DURACION_SESION_MS = 30 * 60 * 1000;
+
+function leerSesionCurriculums() {
+  try {
+    const sesionGuardada = JSON.parse(
+      localStorage.getItem(CLAVE_SESION_CURRICULUMS)
+    );
+
+    if (sesionGuardada && Number(sesionGuardada.expiraEn) > Date.now()) {
+      return sesionGuardada;
+    }
+
+    localStorage.removeItem(CLAVE_SESION_CURRICULUMS);
+  } catch (error) {
+    console.warn("No se pudo leer la sesion local:", error);
+  }
+
+  return null;
+}
+
+function guardarSesionCurriculums() {
+  localStorage.setItem(
+    CLAVE_SESION_CURRICULUMS,
+    JSON.stringify({ expiraEn: Date.now() + DURACION_SESION_MS })
+  );
+}
+
+function borrarSesionCurriculums() {
+  localStorage.removeItem(CLAVE_SESION_CURRICULUMS);
+}
+
 const { createApp } = Vue;
 
 createApp({
   data() {
     return {
       // --- Control de Acceso (Modal) ---
-      autenticado: false,
+      autenticado: Boolean(leerSesionCurriculums()),
       cargandoLogin: false,
       errorLogin: "",
+      temporizadorSesion: null,
       login: {
         user: "",
         password: "",
@@ -26,6 +59,45 @@ createApp({
     };
   },
   methods: {
+    iniciarTemporizadorSesion() {
+      const sesion = leerSesionCurriculums();
+
+      if (!sesion) {
+        this.cerrarSesion();
+        return;
+      }
+
+      clearTimeout(this.temporizadorSesion);
+      this.temporizadorSesion = setTimeout(() => {
+        this.cerrarSesion("La sesion expiro. Inicia sesion nuevamente.");
+      }, Math.max(0, Number(sesion.expiraEn) - Date.now()));
+    },
+
+    validarSesion() {
+      if (leerSesionCurriculums()) {
+        if (!this.autenticado) {
+          this.autenticado = true;
+          this.obtenerCurriculums();
+        }
+        this.iniciarTemporizadorSesion();
+      } else if (this.autenticado) {
+        this.cerrarSesion("La sesion expiro. Inicia sesion nuevamente.");
+      }
+    },
+
+    cerrarSesion(mensaje = "") {
+      borrarSesionCurriculums();
+      clearTimeout(this.temporizadorSesion);
+      this.temporizadorSesion = null;
+      this.autenticado = false;
+      this.curriculums = [];
+      this.curriculumsFiltrados = [];
+      this.cargaInicial = false;
+      this.login.user = "";
+      this.login.password = "";
+      this.errorLogin = mensaje;
+    },
+
     /**
      * Intento de login al modal
      */
@@ -47,7 +119,9 @@ createApp({
         });
 
         if (response.data === true || response.data.success === true) {
+          guardarSesionCurriculums();
           this.autenticado = true;
+          this.iniciarTemporizadorSesion();
           // Si el login es exitoso, traemos los documentos
           this.obtenerCurriculums();
         } else {
@@ -94,7 +168,11 @@ createApp({
     },
   },
   mounted() {
-    // Al cargar, el modal aparece por default porque autenticado es false
-    // console.log("Sistema listo.");
+    if (this.autenticado) {
+      this.iniciarTemporizadorSesion();
+      this.obtenerCurriculums();
+    }
+
+    window.addEventListener("focus", this.validarSesion);
   },
 }).mount("#app");
