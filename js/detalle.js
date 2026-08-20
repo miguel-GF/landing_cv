@@ -28,6 +28,16 @@ createApp({
         if (Number(status) !== 200) {
           error.value = mensaje || "Ocurrió un error al cargar el detalle.";
         } else {
+          curriculum.documentos = [...(curriculum.documentos || [])].sort(
+            (a, b) =>
+              String(a.nombre || "").localeCompare(
+                String(b.nombre || ""),
+                "es",
+                { numeric: true, sensitivity: "base" }
+              ) ||
+              Number(a.curriculum_docente_archivo_id || 0) -
+                Number(b.curriculum_docente_archivo_id || 0)
+          );
           docente.value = curriculum;
         }
 

@@ -21,8 +21,23 @@ createApp({
         if (Number(status) !== 200) {
           console.error("Error:", mensaje);
         } else {
-          curriculums.value = data;
-          docentesFiltrados.value = data;
+          const curriculumsOrdenados = [...(data || [])].sort((a, b) => {
+            const fechaA = Date.parse(
+              String(a.registro_fecha || "").replace(" ", "T")
+            ) || 0;
+            const fechaB = Date.parse(
+              String(b.registro_fecha || "").replace(" ", "T")
+            ) || 0;
+
+            return (
+              fechaB - fechaA ||
+              Number(b.curriculum_docente_id || 0) -
+                Number(a.curriculum_docente_id || 0)
+            );
+          });
+
+          curriculums.value = curriculumsOrdenados;
+          docentesFiltrados.value = curriculumsOrdenados;
         }
       } catch (error) {
         console.error("Error al obtener docentes:", error);

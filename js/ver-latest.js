@@ -145,8 +145,25 @@ createApp({
       try {
         // Esta petición ya llevará el Bearer Token automáticamente
         const response = await axios.get("docente/cvs");
-        this.curriculums = response.data.curriculums;
-        this.curriculumsFiltrados = response.data.curriculums;
+        const curriculumsOrdenados = [...(response.data.curriculums || [])].sort(
+          (a, b) => {
+            const fechaA = Date.parse(
+              String(a.registro_fecha || "").replace(" ", "T")
+            ) || 0;
+            const fechaB = Date.parse(
+              String(b.registro_fecha || "").replace(" ", "T")
+            ) || 0;
+
+            return (
+              fechaB - fechaA ||
+              Number(b.curriculum_docente_id || 0) -
+                Number(a.curriculum_docente_id || 0)
+            );
+          }
+        );
+
+        this.curriculums = curriculumsOrdenados;
+        this.curriculumsFiltrados = curriculumsOrdenados;
       } catch (error) {
         console.error("Error al cargar datos:", error);
         alert("Error al obtener la información de la API.");
