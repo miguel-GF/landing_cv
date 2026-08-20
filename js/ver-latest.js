@@ -1,11 +1,13 @@
 // 1. Configuración Global de Axios
 // Esto asegura que TODAS las peticiones lleven el token y apunten a tu servidor
-axios.defaults.baseURL = "http://127.0.0.1:8000/api/v1/"; // <--- Ajusta tu ruta de localhost
-axios.defaults.headers.common["Authorization"] = "Bearer e993014b8b85736546e8b35171d3b072"; // <--- Pon tu token real aquí
+const { apiBaseUrl, bearerToken, sessionDurationMinutes } = window.IPES_CONFIG;
+
+axios.defaults.baseURL = `${apiBaseUrl}/`;
+axios.defaults.headers.common["Authorization"] = `Bearer ${bearerToken}`;
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
-const CLAVE_SESION_CURRICULUMS = "ipes_curriculums_sesion";
-const DURACION_SESION_MS = 30 * 60 * 1000;
+const CLAVE_SESION_CURRICULUMS = window.IPES_CONFIG.sessionStorageKey;
+const DURACION_SESION_MS = sessionDurationMinutes * 60 * 1000;
 
 function leerSesionCurriculums() {
   try {

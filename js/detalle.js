@@ -15,10 +15,10 @@ createApp({
       const id = obtenerIdDesdeURL();
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/v1/docente/cv/${id}`,
+          `${window.IPES_CONFIG.apiBaseUrl}/docente/cv/${id}`,
           {
             headers: {
-              Authorization: "Bearer e993014b8b85736546e8b35171d3b072",
+              Authorization: `Bearer ${window.IPES_CONFIG.bearerToken}`,
             },
           }
         );
@@ -46,11 +46,11 @@ createApp({
         const formData = new FormData();
         formData.append("archivoId", archivoId)
         const response = await axios.post(
-          `http://127.0.0.1:8000/api/v1/docente/descargar/documento`,
+          `${window.IPES_CONFIG.apiBaseUrl}/docente/descargar/documento`,
           formData,
           {
             headers: {
-              Authorization: "Bearer e993014b8b85736546e8b35171d3b072",
+              Authorization: `Bearer ${window.IPES_CONFIG.bearerToken}`,
             },
             responseType: "blob",
           }

@@ -368,11 +368,11 @@ createApp({
           formData.append("archivoCuentaBancaria", archivoCuentaBancaria.value);
         }
         const response = await axios.post(
-          "http://127.0.0.1:8000/api/v1/docente/cv",
+          `${window.IPES_CONFIG.apiBaseUrl}/docente/cv`,
           formData,
           {
             headers: {
-              Authorization: "Bearer e993014b8b85736546e8b35171d3b072",
+              Authorization: `Bearer ${window.IPES_CONFIG.bearerToken}`,
             },
           }
         );

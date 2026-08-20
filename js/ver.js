@@ -10,10 +10,10 @@ createApp({
     const fetchDocentes = async () => {
       try {
         const response = await axios.get(
-          "http://127.0.0.1:8000/api/v1/docente/cvs",
+          `${window.IPES_CONFIG.apiBaseUrl}/docente/cvs`,
           {
             headers: {
-              Authorization: "Bearer e993014b8b85736546e8b35171d3b072",
+              Authorization: `Bearer ${window.IPES_CONFIG.bearerToken}`,
             },
           }
         );
