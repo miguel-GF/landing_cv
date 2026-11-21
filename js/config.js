@@ -1,7 +1,10 @@
 // Configuracion activa del proyecto.
 // Este sitio es HTML estatico y por el momento NO carga valores desde .env.
 // Cambia solamente estas constantes al publicar el proyecto.
-const IPES_API_BASE_URL = "http://127.0.0.1:8000/api/v1";
+const IPES_ES_ENTORNO_LOCAL = window.location.hostname.endsWith(".test");
+const IPES_API_BASE_URL = IPES_ES_ENTORNO_LOCAL
+  ? "http://school-control.test/api/v1"
+  : "http://127.0.0.1:8000/api/v1";
 const IPES_BEARER_TOKEN = "e993014b8b85736546e8b35171d3b072";
 const IPES_SESSION_DURATION_MINUTES = 30;
 const IPES_SESSION_STORAGE_KEY = "ipes_curriculums_sesion";

@@ -119,7 +119,13 @@
             class="col-md-6 col-lg-4 mb-4">
             <div class="card shadow-sm h-100 border-0">
               <div class="card-body">
-                <h5 class="card-title fw-bold text-primary">{{ docente.nombre || '--' }}</h5>
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                  <h5 class="card-title fw-bold text-primary mb-0">{{ docente.nombre || '--' }}</h5>
+                  <span class="badge"
+                    :class="(docente.status || '').toLowerCase() === 'completado' ? 'bg-success' : 'bg-warning text-dark'">
+                    {{ docente.status || 'Activo' }}
+                  </span>
+                </div>
                 <hr>
                 <p class="card-text text-muted small">
                   <strong>Folio:</strong> {{ docente.folio || 'N/A' }}<br>

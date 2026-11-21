@@ -178,7 +178,7 @@ createApp({
     filtrarDocentes() {
       const query = this.busqueda.toLowerCase();
       this.curriculumsFiltrados = this.curriculums.filter((docente) => {
-        return docente.nombre.toLowerCase().includes(query);
+        return String(docente.nombre || "").toLowerCase().includes(query);
       });
     },
 

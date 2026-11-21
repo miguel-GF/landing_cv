@@ -49,7 +49,7 @@ createApp({
     const filtrarDocentes = () => {
       const filtro = busqueda.value.toLowerCase();
       docentesFiltrados.value = curriculums.value.filter((docente) =>
-        docente.nombre.toLowerCase().includes(filtro)
+        String(docente.nombre || "").toLowerCase().includes(filtro)
       );
     };
 
