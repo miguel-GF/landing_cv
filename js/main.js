@@ -506,7 +506,9 @@ createApp({
           aplicarDocumentos(data.documentos || []);
           estadoCaptura.value = "completado";
           pantalla.value = "completado";
-          if (modalSoporte) modalSoporte.show();
+          setTimeout(() => {
+            if (modalSoporte) modalSoporte.show();
+          }, 150);
         } else {
           aplicarCurriculum(data.curriculum);
           aplicarDocumentos(data.documentos || []);
@@ -813,6 +815,31 @@ createApp({
       if (modalSoporte) modalSoporte.show();
     };
 
+    const limpiarBackdrops = () => {
+      if (document.querySelector(".modal.show")) return;
+      document.querySelectorAll(".modal-backdrop").forEach((elemento) => {
+        elemento.remove();
+      });
+      document.body.classList.remove("modal-open");
+      document.body.style.removeProperty("padding-right");
+      document.body.style.removeProperty("overflow");
+    };
+
+    const cerrarSoporte = () => {
+      if (modalSoporte) modalSoporte.hide();
+
+      setTimeout(() => {
+        const elemento = document.getElementById("modalSoporte");
+        if (elemento && elemento.classList.contains("show")) {
+          elemento.classList.remove("show");
+          elemento.style.display = "none";
+          elemento.setAttribute("aria-hidden", "true");
+          elemento.removeAttribute("aria-modal");
+        }
+        limpiarBackdrops();
+      }, 350);
+    };
+
     onMounted(() => {
       setTimeout(() => {
         cargaInicial.value = true;
@@ -827,6 +854,17 @@ createApp({
       modalError = new bootstrap.Modal(document.getElementById("modalError"));
       modalExito = new bootstrap.Modal(document.getElementById("modalExito"));
       modalSoporte = new bootstrap.Modal(document.getElementById("modalSoporte"));
+
+      [
+        "modalFaltantes",
+        "modalConfirmarFinalizar",
+        "modalError",
+        "modalExito",
+        "modalSoporte",
+      ].forEach((id) => {
+        const elemento = document.getElementById(id);
+        if (elemento) elemento.addEventListener("hidden.bs.modal", limpiarBackdrops);
+      });
     });
 
     return {
@@ -869,6 +907,7 @@ createApp({
       volverAlInicio,
       irASeccion,
       abrirSoporte,
+      cerrarSoporte,
       fechaLegible,
     };
   },

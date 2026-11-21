@@ -776,7 +776,7 @@
               <i class="bi bi-headset me-2"></i>Soporte
             </h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-              aria-label="Close"></button>
+              @click="cerrarSoporte" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <p>
@@ -791,7 +791,8 @@
             </p>
           </div>
           <div class="modal-footer justify-content-center">
-            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">ENTENDIDO</button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+              @click="cerrarSoporte">ENTENDIDO</button>
           </div>
         </div>
       </div>
