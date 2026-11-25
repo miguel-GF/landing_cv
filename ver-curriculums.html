@@ -128,13 +128,29 @@
                 </div>
                 <hr>
                 <p class="card-text text-muted small">
+                  <strong>Correo:</strong> {{ docente.correo_institucional || 'N/A' }}<br>
                   <strong>Folio:</strong> {{ docente.folio || 'N/A' }}<br>
                   <strong>Nacimiento:</strong> {{ docente.fecha_nacimiento || 'N/A' }}<br>
-                  <strong>Celular:</strong> {{ docente.numero_celular || 'N/A' }}
+                  <strong>Celular:</strong> {{ docente.numero_celular || 'N/A' }}<br>
+                  <strong>Contraseña:</strong> {{ docente.tiene_password ? 'Asignada' : 'Sin asignar' }}
                 </p>
                 <button @click="verDetalle(docente.curriculum_docente_id)" class="btn btn-outline-primary w-100 mt-2">
                   Ver documentos <i class="bi bi-folder2-open ms-1"></i>
                 </button>
+                <div class="d-flex gap-2 mt-2">
+                  <button type="button" class="btn btn-outline-secondary btn-sm flex-fill"
+                    @click="generarPassword(docente)" title="Generar o restablecer contraseña">
+                    <i class="bi bi-key me-1"></i>Contraseña
+                  </button>
+                  <button v-if="(docente.status || '').toLowerCase() !== 'completado'" type="button"
+                    class="btn btn-outline-success btn-sm flex-fill" @click="cerrarCV(docente)">
+                    <i class="bi bi-lock me-1"></i>Cerrar CV
+                  </button>
+                  <button v-else type="button" class="btn btn-outline-warning btn-sm flex-fill"
+                    @click="reabrirCV(docente)">
+                    <i class="bi bi-unlock me-1"></i>Reabrir
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -146,10 +162,72 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal contraseña admin -->
+    <div class="modal fade" id="modalPasswordAdmin" tabindex="-1" aria-labelledby="passwordAdminLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-dark text-white">
+            <h5 class="modal-title" id="passwordAdminLabel">
+              <i class="bi bi-key me-2"></i>Contraseña del docente
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+              aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p class="mb-2">
+              Contraseña para
+              <strong>{{ docentePassword?.nombre || docentePassword?.correo_institucional || 'docente' }}</strong>:
+            </p>
+            <div class="input-group mb-3">
+              <input type="text" class="form-control text-center fw-bold" :value="passwordGenerada" readonly>
+            </div>
+            <button type="button" class="btn btn-outline-primary w-100" @click="copiarPasswordAdmin">
+              <i class="bi" :class="passwordCopiada ? 'bi-check2-circle' : 'bi-clipboard'"></i>
+              {{ passwordCopiada ? 'Contraseña copiada' : 'Copiar contraseña' }}
+            </button>
+            <div class="alert alert-warning mt-3 mb-0 small">
+              Esta contraseña se muestra una sola vez. Cópiala y entrégala personalmente al docente.
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal faltantes al cerrar CV -->
+    <div class="modal fade" id="modalFaltantesAdmin" tabindex="-1" aria-labelledby="faltantesAdminLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header bg-warning">
+            <h5 class="modal-title" id="faltantesAdminLabel">
+              <i class="bi bi-list-check me-2"></i>Falta completar el expediente
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p class="mb-2">No se puede cerrar el CV todavía. Falta:</p>
+            <ul class="list-unstyled mb-0">
+              <li v-for="item in faltantesAdmin" :key="item" class="py-1">
+                <i class="bi bi-x-circle-fill text-danger me-2"></i>{{ item }}
+              </li>
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Entendido</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
   <script src="js/sha256.min.js"></script>
   <script src="js/vue3.js"></script>
   <script src="js/axios.min.js"></script>
+  <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="js/config.js"></script>
   <script src="js/ver-latest.js"></script>
 </body>

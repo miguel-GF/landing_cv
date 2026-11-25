@@ -46,8 +46,8 @@
         <span class="hero-badge">IPES · Formulario Docentes</span>
         <h1>Tu Curriculum Vitae, en un solo lugar</h1>
         <p class="hero-subtitulo">
-          Identifícate con tu celular, completa tu expediente por partes y envíalo a revisión
-          cuando tengas todo listo.
+          Identifícate con tu correo institucional, completa tu expediente y actualízalo
+          cuando lo necesites.
         </p>
 
         <div class="stepper-cv">
@@ -72,60 +72,137 @@
               <i v-if="pantalla === 'completado'" class="bi bi-check-lg"></i>
               <span v-else>3</span>
             </span>
-            <span>Envía a revisión</span>
+            <span>Actualiza tu CV</span>
           </div>
         </div>
       </div>
     </header>
 
-    <!-- PASO 1: IDENTIFICACION POR CELULAR -->
+    <!-- PASO 1: IDENTIFICACION POR CORREO -->
     <main v-if="pantalla === 'identificacion'" class="container py-5">
       <div class="row justify-content-center">
         <div class="col-12 col-md-9 col-lg-7">
           <div class="card gate-card border-0 shadow-lg">
             <div class="card-body p-4 p-md-5">
               <div class="gate-icono mx-auto">
-                <i class="bi bi-phone"></i>
+                <i class="bi bi-envelope-at"></i>
               </div>
-              <h2 class="text-center h3 mb-2">Empecemos con tu número de celular</h2>
+              <h2 class="text-center h3 mb-2">Empecemos con tu correo institucional</h2>
               <p class="text-center text-muted mb-4">
-                Con tu celular identificamos si ya tienes un expediente y te mostramos lo que
-                llevas capturado. Así evitamos que tu información se duplique o se quede dispersa.
+                Con tu correo identificamos si ya tienes un expediente. Si es tu primera vez,
+                crearemos tu registro y te daremos una contraseña de acceso.
               </p>
 
-              <label for="celular_busqueda" class="form-label fw-bold">Número de celular *</label>
+              <label for="correo_busqueda" class="form-label fw-bold">Correo institucional *</label>
               <div class="input-group input-group-lg">
-                <span class="input-group-text"><i class="bi bi-phone"></i></span>
-                <span class="input-group-text fw-bold">+52</span>
-                <input type="tel" id="celular_busqueda" class="form-control" inputmode="numeric"
-                  placeholder="222-123-4567" v-model="celularBusqueda" @input="onCelularBusquedaInput"
-                  @keyup.enter="buscarExpediente" maxlength="12" autocomplete="tel-national">
+                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                <input type="email" id="correo_busqueda" class="form-control"
+                  placeholder="nombre@institucion.edu.mx" v-model="correoAcceso"
+                  @keyup.enter="consultarCorreo" maxlength="150" autocomplete="email">
               </div>
-              <div v-if="!celularBusquedaValido" class="text-danger small mt-2">
-                Captura un número de celular válido de 10 dígitos.
+              <div v-if="!correoAccesoValido" class="text-danger small mt-2">
+                Captura un correo institucional válido.
               </div>
 
               <button type="button" class="btn btn-primary btn-lg w-100 mt-4" :disabled="buscando"
-                @click="buscarExpediente">
+                @click="consultarCorreo">
                 <span v-if="buscando" class="spinner-border spinner-border-sm me-2"></span>
                 <i v-else class="bi bi-search me-2"></i>
-                {{ buscando ? 'Buscando expediente...' : 'Continuar' }}
+                {{ buscando ? 'Consultando correo...' : 'Continuar' }}
               </button>
 
               <div class="alert alert-light border mt-4 mb-0 small">
                 <div class="d-flex gap-2 mb-2">
-                  <i class="bi bi-shield-check text-primary"></i>
-                  <span>Tu avance se guarda en el servidor y puedes continuar después con el mismo número.</span>
+                  <i class="bi bi-person-vcard text-primary"></i>
+                  <span>Tu correo institucional identifica tu expediente y evita registros duplicados.</span>
                 </div>
                 <div class="d-flex gap-2 mb-2">
-                  <i class="bi bi-files text-primary"></i>
-                  <span>Sube todos tus documentos en un solo expediente, no en registros separados.</span>
+                  <i class="bi bi-shield-lock text-primary"></i>
+                  <span>La primera vez te generaremos una contraseña segura de 12 caracteres.</span>
+                </div>
+                <div class="d-flex gap-2 mb-2">
+                  <i class="bi bi-arrow-repeat text-primary"></i>
+                  <span>Puedes volver cuando quieras para actualizar tu información.</span>
                 </div>
                 <div class="d-flex gap-2">
-                  <i class="bi bi-lock text-primary"></i>
-                  <span>Al enviarlo a revisión ya no podrás modificarlo; solo soporte podrá ayudarte.</span>
+                  <i class="bi bi-headset text-primary"></i>
+                  <span>Si olvidas tu contraseña, contacta a soporte.</span>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ACCESO CON CONTRASEÑA -->
+    <main v-else-if="pantalla === 'password'" class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+          <div class="card gate-card border-0 shadow-lg">
+            <div class="card-body p-4 p-md-5">
+              <div class="gate-icono mx-auto">
+                <i class="bi bi-shield-lock"></i>
+              </div>
+              <h2 class="text-center h3 mb-2">Ingresa tu contraseña</h2>
+              <p class="text-center text-muted mb-4">
+                Encontramos tu expediente para:<br>
+                <strong class="text-dark">{{ correoAcceso }}</strong>
+              </p>
+
+              <label for="password_acceso" class="form-label fw-bold">Contraseña *</label>
+              <div class="input-group input-group-lg">
+                <span class="input-group-text"><i class="bi bi-key"></i></span>
+                <input type="password" id="password_acceso" class="form-control"
+                  v-model="passwordAcceso" @keyup.enter="accederConPassword"
+                  placeholder="Tu contraseña de acceso" maxlength="100" autocomplete="current-password">
+              </div>
+
+              <button type="button" class="btn btn-primary btn-lg w-100 mt-4" :disabled="buscando"
+                @click="accederConPassword">
+                <span v-if="buscando" class="spinner-border spinner-border-sm me-2"></span>
+                <i v-else class="bi bi-box-arrow-in-right me-2"></i>
+                {{ buscando ? 'Validando...' : 'Entrar a mi expediente' }}
+              </button>
+
+              <div class="alert alert-light border mt-4 mb-0 small">
+                <i class="bi bi-info-circle text-primary me-2"></i>
+                Si no tienes contraseña o no la recuerdas, contacta a soporte.
+                No se envía ningún correo automático.
+              </div>
+
+              <div class="text-center mt-3">
+                <button type="button" class="btn btn-link" @click="volverAlInicio">
+                  <i class="bi bi-arrow-left me-1"></i>Regresar al inicio
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- EXPEDIENTE SIN CONTRASEÑA -->
+    <main v-else-if="pantalla === 'sin_password'" class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+          <div class="card gate-card border-0 shadow-lg">
+            <div class="card-body p-4 p-md-5 text-center">
+              <div class="gate-icono mx-auto">
+                <i class="bi bi-info-circle"></i>
+              </div>
+              <h2 class="h3 mb-2">Tu expediente ya existe</h2>
+              <p class="text-muted">
+                Encontramos tu correo <strong class="text-dark">{{ correoAcceso }}</strong>,
+                pero el expediente aún no tiene contraseña.
+              </p>
+              <div class="alert alert-warning text-start">
+                <i class="bi bi-headset me-2"></i>
+                Contacta a soporte para que te proporcionen tu contraseña de acceso.
+              </div>
+              <button type="button" class="btn btn-secondary btn-lg mt-2" @click="volverAlInicio">
+                <i class="bi bi-arrow-left me-2"></i>Regresar al inicio
+              </button>
             </div>
           </div>
         </div>
@@ -137,11 +214,12 @@
       <div class="form-header">
         <div>
           <span class="badge" :class="estadoCaptura === 'nuevo' ? 'bg-primary' : 'bg-success'">
-            {{ estadoCaptura === 'nuevo' ? 'Nuevo expediente' : 'Continuando tu captura' }}
+            {{ estadoCaptura === 'nuevo' ? 'Expediente creado' : 'Expediente encontrado' }}
           </span>
           <h2 class="h3 mt-2 mb-1">Datos Generales y Curriculum Vitae</h2>
           <p class="mb-0 text-white-50">
-            Celular registrado: <strong class="text-white">{{ celularFormateado }}</strong>
+            Correo institucional:
+            <strong class="text-white">{{ formulario.correoInstitucional }}</strong>
           </p>
         </div>
         <button type="button" class="btn btn-outline-light" @click="volverAlInicio"
@@ -155,7 +233,7 @@
         <button type="button" class="btn-close" @click="mensajeInfo = ''" aria-label="Cerrar"></button>
       </div>
 
-      <form @submit.prevent="intentarFinalizar" novalidate>
+      <form @submit.prevent="guardarAvance" novalidate>
         <!-- DATOS PERSONALES -->
         <section id="seccion-datos-personales" class="seccion-cv card border-0 shadow-sm mb-4">
           <div class="card-body p-4">
@@ -216,7 +294,10 @@
               <div class="col-12 col-md-4">
                 <label for="correo_institucional" class="form-label">Correo Institucional *</label>
                 <input type="email" class="form-control" id="correo_institucional"
-                  v-model="formulario.correoInstitucional" maxlength="150">
+                  v-model="formulario.correoInstitucional" maxlength="150" readonly>
+                <div class="form-text">
+                  Este correo identifica tu expediente. Si necesitas corregirlo, contacta a soporte.
+                </div>
               </div>
             </div>
 
@@ -227,11 +308,13 @@
               </div>
               <div class="col-12 col-md-4">
                 <label for="celular" class="form-label">Celular *</label>
-                <input type="tel" class="form-control" id="celular" :value="celularFormateado" readonly>
-                <div class="form-text">
-                  Este número identifica tu expediente y no se puede cambiar aquí.
-                  Si necesitas corregirlo, contacta a soporte.
+                <div class="input-group">
+                  <span class="input-group-text fw-bold">+52</span>
+                  <input type="tel" class="form-control" id="celular" :value="celularFormateado"
+                    @input="onCelularFormularioInput" maxlength="12" inputmode="numeric"
+                    placeholder="222-123-4567">
                 </div>
+                <div class="form-text">Número de contacto del docente.</div>
               </div>
               <div class="col-12 col-md-4">
                 <label for="telefono" class="form-label">Teléfono Fijo</label>
@@ -475,7 +558,7 @@
 
             <div class="alert alert-warning small mt-3">
               <i class="bi bi-exclamation-triangle me-2"></i>
-              Todos los documentos son obligatorios para poder enviar tu currículum a revisión.
+              Todos los documentos son obligatorios para completar tu expediente.
               Formatos permitidos: PDF; la cuenta bancaria en JPG o PNG. Máximo 10 MB por archivo.
             </div>
 
@@ -534,92 +617,18 @@
               <i class="bi bi-cloud-check me-1"></i>Último guardado: {{ guardadoEn }}
             </span>
             <span v-else>
-              <i class="bi bi-info-circle me-1"></i>Puedes guardar tu avance y continuar después.
+              <i class="bi bi-info-circle me-1"></i>Puedes guardar tus cambios y continuar después.
             </span>
           </div>
           <div class="acciones-botones">
-            <button type="button" class="btn btn-outline-light btn-lg" :disabled="guardando"
-              @click="guardarAvance(false)">
+            <button type="submit" class="btn btn-warning btn-lg fw-bold" :disabled="guardando">
               <span v-if="guardando" class="spinner-border spinner-border-sm me-2"></span>
               <i v-else class="bi bi-cloud-arrow-down me-2"></i>
-              Guardar avance
-            </button>
-            <button type="submit" class="btn btn-warning btn-lg fw-bold" :disabled="finalizando">
-              <span v-if="finalizando" class="spinner-border spinner-border-sm me-2"></span>
-              <i v-else class="bi bi-send-check me-2"></i>
-              Guardar y enviar a revisión
+              Guardar cambios
             </button>
           </div>
         </div>
       </form>
-    </main>
-
-    <!-- PASO 3: CURRICULUM CERRADO -->
-    <main v-else-if="pantalla === 'completado'" class="container py-5">
-      <div class="row justify-content-center">
-        <div class="col-12 col-lg-8">
-          <div class="card card-completado border-0 shadow-lg">
-            <div class="card-body p-4 p-md-5 text-center">
-              <div class="completado-icono mx-auto">
-                <i class="bi bi-patch-check-fill"></i>
-              </div>
-              <h2 class="h2 mt-3">Tu currículum ya está completo</h2>
-              <p class="lead text-muted">
-                El expediente de
-                <strong>{{ curriculumResumen?.nombre || formulario.nombre || 'docente' }}</strong>
-                con el número
-                <strong>{{ celularFormateado || '—' }}</strong>
-                ya fue enviado a revisión.
-              </p>
-
-              <div class="alert alert-warning text-start">
-                <div class="d-flex gap-2">
-                  <i class="bi bi-lock-fill mt-1"></i>
-                  <div>
-                    <strong>Ya no puedes capturar más información.</strong><br>
-                    Este expediente quedó cerrado. Si necesitas corregir, agregar o reemplazar algún
-                    dato o documento, contacta al área de soporte para que te apoyen.
-                  </div>
-                </div>
-              </div>
-
-              <div class="row g-3 text-start mt-3">
-                <div class="col-12 col-md-4">
-                  <div class="resumen-dato">
-                    <small>Folio</small>
-                    <strong>{{ curriculumResumen?.folio || '—' }}</strong>
-                  </div>
-                </div>
-                <div class="col-12 col-md-4">
-                  <div class="resumen-dato">
-                    <small>Celular registrado</small>
-                    <strong>{{ celularFormateado || '—' }}</strong>
-                  </div>
-                </div>
-                <div class="col-12 col-md-4">
-                  <div class="resumen-dato">
-                    <small>Documentos</small>
-                    <strong>{{ documentosServidor.length }} cargados</strong>
-                  </div>
-                </div>
-              </div>
-
-              <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center mt-4">
-                <button type="button" class="btn btn-outline-primary btn-lg" @click="abrirSoporte">
-                  <i class="bi bi-headset me-2"></i>¿Necesitas un cambio? Contacta a soporte
-                </button>
-                <button type="button" class="btn btn-secondary btn-lg" @click="volverAlInicio">
-                  <i class="bi bi-arrow-left me-2"></i>Regresar al inicio
-                </button>
-              </div>
-
-              <p class="text-muted small mt-4 mb-0">
-                Enviado el {{ fechaLegible(curriculumResumen?.finalizado_fecha) }}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
     </main>
 
     <!-- INDICADOR FLOTANTE DE AVANCE -->
@@ -665,65 +674,43 @@
           <strong>Te falta:</strong> {{ progreso.faltantes.join(', ') }}
         </div>
         <div v-else class="alert alert-success py-2 small mt-3 mb-0">
-          ¡Todo listo! Ya puedes enviar tu currículum a revisión.
+          Tu expediente está completo. Puedes actualizarlo cuando quieras.
         </div>
       </div>
     </div>
 
     <!-- MODALES -->
-    <div class="modal fade" id="modalFaltantes" tabindex="-1" aria-labelledby="faltantesModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-          <div class="modal-header bg-warning">
-            <h5 class="modal-title" id="faltantesModalLabel">
-              <i class="bi bi-list-check me-2"></i>Aún te falta completar
-            </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <p class="mb-2">Para enviar tu currículum a revisión necesitas completar lo siguiente:</p>
-            <ul class="list-unstyled mb-0">
-              <li v-for="item in faltantesLista" :key="item" class="py-1">
-                <i class="bi bi-x-circle-fill text-danger me-2"></i>{{ item }}
-              </li>
-            </ul>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Seguir capturando</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal fade" id="modalConfirmarFinalizar" tabindex="-1" aria-labelledby="confirmarModalLabel"
-      aria-hidden="true">
+    <div class="modal fade" id="modalPasswordNueva" tabindex="-1" aria-labelledby="passwordNuevaModalLabel"
+      aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-          <div class="modal-header bg-dark text-white">
-            <h5 class="modal-title" id="confirmarModalLabel">
-              <i class="bi bi-send-check me-2"></i>Enviar currículum a revisión
+          <div class="modal-header bg-success text-white">
+            <h5 class="modal-title" id="passwordNuevaModalLabel">
+              <i class="bi bi-shield-lock me-2"></i>Tu contraseña de acceso
             </h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-              aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <p>
-              Vas a enviar el currículum de
-              <strong>{{ curriculumResumen?.nombre || formulario.nombre || 'docente' }}</strong>
-              con el número <strong>{{ celularFormateado || '—' }}</strong>.
+              Creamos tu expediente. Guarda esta contraseña, <strong>no se volverá a mostrar</strong>.
             </p>
-            <div class="alert alert-warning mb-0">
-              <i class="bi bi-exclamation-triangle me-2"></i>
-              Después de enviarlo <strong>ya no podrás capturar más información ni subir documentos</strong>.
-              Si necesitas un cambio, deberás contactar a soporte.
+            <div class="input-group input-group-lg mb-3">
+              <input type="text" class="form-control text-center fw-bold" :value="passwordNueva" readonly>
+            </div>
+            <button type="button" class="btn btn-outline-primary w-100" @click="copiarPasswordNueva">
+              <i class="bi" :class="passwordCopiada ? 'bi-check2-circle' : 'bi-clipboard'"></i>
+              {{ passwordCopiada ? 'Contraseña copiada' : 'Copiar contraseña' }}
+            </button>
+            <div v-if="passwordCopiada" class="alert alert-success mt-3 mb-0 small">
+              Contraseña copiada. Presiona “Continuar”.
+            </div>
+            <div v-else class="alert alert-warning mt-3 mb-0 small">
+              Debes copiar la contraseña para continuar.
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <button type="button" class="btn btn-warning fw-bold" @click="confirmarFinalizar"
-              :disabled="finalizando">
-              <span v-if="finalizando" class="spinner-border spinner-border-sm me-2"></span>
-              Sí, enviar a revisión
+            <button type="button" class="btn btn-success w-100" :disabled="!passwordCopiada"
+              @click="continuarConPasswordNueva">
+              Continuar
             </button>
           </div>
         </div>
@@ -768,35 +755,6 @@
       </div>
     </div>
 
-    <div class="modal fade" id="modalSoporte" tabindex="-1" aria-labelledby="soporteModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title" id="soporteModalLabel">
-              <i class="bi bi-headset me-2"></i>Soporte
-            </h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-              @click="cerrarSoporte" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <p>
-              El expediente de
-              <strong>{{ curriculumResumen?.nombre || formulario.nombre || 'docente' }}</strong>
-              con el número <strong>{{ celularFormateado || '—' }}</strong> ya está cerrado.
-            </p>
-            <p class="mb-0">
-              Ya no es posible capturar más información desde este formulario. Si necesitas
-              corregir, agregar o reemplazar algún dato o documento, contacta al área de soporte
-              para que te apoyen con el cambio.
-            </p>
-          </div>
-          <div class="modal-footer justify-content-center">
-            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-              @click="cerrarSoporte">ENTENDIDO</button>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 
   <script src="bootstrap/js/bootstrap.bundle.min.js"

@@ -7,7 +7,6 @@ const { createApp, ref, reactive, computed, onMounted } = Vue;
 const normalizarCelular = (valor) => {
   let digitos = String(valor ?? "").replace(/\D+/g, "");
 
-  // Si pegan el numero con lada de Mexico (+52 o 52 + 1), conservar los ultimos 10 digitos.
   if (digitos.length > 10 && digitos.startsWith("52")) {
     digitos = digitos.slice(-10);
   }
@@ -33,17 +32,6 @@ const codigoPostalValido = (valor) =>
   !valor || /^\d{5}$/.test(String(valor).trim());
 
 const texto = (valor) => (valor === null || valor === undefined ? "" : String(valor));
-
-const fechaLegible = (valor) => {
-  if (!valor) return "—";
-  const fecha = new Date(String(valor).replace(" ", "T"));
-  if (Number.isNaN(fecha.getTime())) return String(valor);
-  return fecha.toLocaleDateString("es-MX", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-};
 
 const CAMPOS_REQUERIDOS = [
   { key: "nombre", label: "Nombre completo", grupo: "Datos personales" },
@@ -205,21 +193,22 @@ createApp({
     const pantalla = ref("identificacion");
     const estadoCaptura = ref(null);
     const curriculumId = ref(null);
-    const curriculumResumen = ref(null);
-    const documentosServidor = ref([]);
+    const tokenAcceso = ref("");
 
-    const celularBusqueda = ref("");
-    const celularBusquedaValido = ref(true);
+    const correoAcceso = ref("");
+    const correoAccesoValido = ref(true);
+    const passwordAcceso = ref("");
+    const passwordNueva = ref("");
+    const passwordCopiada = ref(false);
+
     const buscando = ref(false);
     const guardando = ref(false);
-    const finalizando = ref(false);
     const guardadoEn = ref("");
 
     const mensajeInfo = ref("");
     const mensajeError = ref("");
     const exitoTitulo = ref("");
     const exitoMensaje = ref("");
-    const faltantesLista = ref([]);
     const progresoAbierto = ref(false);
 
     const formulario = reactive(crearFormularioInicial());
@@ -227,11 +216,9 @@ createApp({
     const archivosNuevos = reactive({});
     const archivosExistentes = reactive({});
 
-    let modalFaltantes = null;
-    let modalConfirmar = null;
+    let modalPasswordNueva = null;
     let modalError = null;
     let modalExito = null;
-    let modalSoporte = null;
 
     DOCUMENTOS_REQUERIDOS.forEach((documento) => {
       descripciones[documento.tipo] = "";
@@ -239,6 +226,10 @@ createApp({
 
     const erroresFormato = computed(() => {
       const errores = [];
+
+      if (!formulario.correoInstitucional || !emailValido(formulario.correoInstitucional)) {
+        errores.push("El correo institucional no es válido.");
+      }
 
       if (formulario.nombre && !validacionNombre(formulario.nombre)) {
         errores.push("El nombre solo puede contener letras y espacios.");
@@ -253,10 +244,6 @@ createApp({
 
       if (!emailValido(formulario.correo)) {
         errores.push("El correo electrónico no tiene un formato válido.");
-      }
-
-      if (!emailValido(formulario.correoInstitucional)) {
-        errores.push("El correo institucional no tiene un formato válido.");
       }
 
       if (formulario.celular && !/^\d{10}$/.test(formulario.celular)) {
@@ -321,7 +308,6 @@ createApp({
     });
 
     const pasoActual = computed(() => {
-      if (pantalla.value === "completado") return 3;
       if (pantalla.value === "formulario") {
         return progreso.value.porcentaje === 100 ? 3 : 2;
       }
@@ -344,30 +330,34 @@ createApp({
       });
     };
 
-    const limpiarEstado = () => {
+    const limpiarFormulario = () => {
       asignarFormulario();
       limpiarArchivosNuevos();
       DOCUMENTOS_REQUERIDOS.forEach((documento) => {
         delete archivosExistentes[documento.tipo];
         descripciones[documento.tipo] = "";
       });
-      documentosServidor.value = [];
-      curriculumId.value = null;
-      curriculumResumen.value = null;
-      estadoCaptura.value = null;
-      celularBusqueda.value = "";
-      celularBusquedaValido.value = true;
+      guardadoEn.value = "";
       mensajeInfo.value = "";
       mensajeError.value = "";
-      guardadoEn.value = "";
-      faltantesLista.value = [];
       progresoAbierto.value = false;
+    };
+
+    const limpiarEstado = () => {
+      limpiarFormulario();
+      curriculumId.value = null;
+      tokenAcceso.value = "";
+      correoAcceso.value = "";
+      correoAccesoValido.value = true;
+      passwordAcceso.value = "";
+      passwordNueva.value = "";
+      passwordCopiada.value = false;
+      estadoCaptura.value = null;
     };
 
     const aplicarCurriculum = (curriculum) => {
       if (!curriculum) return;
 
-      curriculumResumen.value = curriculum;
       curriculumId.value = curriculum.curriculum_docente_id;
 
       asignarFormulario({
@@ -379,7 +369,8 @@ createApp({
         estadoCivil: texto(curriculum.estado_civil) || "soltero",
         genero: texto(curriculum.genero) || "hombre",
         correo: texto(curriculum.correo_electronico),
-        correoInstitucional: texto(curriculum.correo_institucional),
+        correoInstitucional:
+          texto(curriculum.correo_institucional) || correoAcceso.value,
         celular: normalizarCelular(curriculum.numero_celular),
         facebook: texto(curriculum.facebook),
         telefono: texto(curriculum.numero_casa),
@@ -423,7 +414,9 @@ createApp({
         informacionAdicional: texto(curriculum.comentarios),
       });
 
-      celularBusqueda.value = formatearCelular(curriculum.numero_celular);
+      if (curriculum.correo_institucional) {
+        correoAcceso.value = texto(curriculum.correo_institucional).toLowerCase();
+      }
     };
 
     const aplicarDocumentos = (documentos = []) => {
@@ -437,11 +430,8 @@ createApp({
 
       DOCUMENTOS_REQUERIDOS.forEach((documento) => {
         archivosExistentes[documento.tipo] = mapa[documento.tipo] || null;
-        descripciones[documento.tipo] =
-          mapa[documento.tipo]?.descripcion || "";
+        descripciones[documento.tipo] = mapa[documento.tipo]?.descripcion || "";
       });
-
-      documentosServidor.value = documentos;
     };
 
     const mostrarError = (error) => {
@@ -466,16 +456,125 @@ createApp({
       if (modalExito) modalExito.show();
     };
 
-    const onCelularBusquedaInput = () => {
-      celularBusqueda.value = formatearCelular(celularBusqueda.value);
-      celularBusquedaValido.value = true;
+    const copiarAlPortapapeles = async (valor) => {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(valor);
+          return true;
+        }
+      } catch (error) {
+        // Intentar con el metodo alternativo.
+      }
+
+      try {
+        const input = document.createElement("textarea");
+        input.value = valor;
+        input.style.position = "fixed";
+        input.style.opacity = "0";
+        document.body.appendChild(input);
+        input.select();
+        const copiado = document.execCommand("copy");
+        document.body.removeChild(input);
+        return copiado;
+      } catch (error) {
+        return false;
+      }
     };
 
-    const buscarExpediente = async () => {
-      const celular = normalizarCelular(celularBusqueda.value);
+    const consultarCorreo = async () => {
+      const correo = String(correoAcceso.value || "").trim().toLowerCase();
 
-      if (!/^\d{10}$/.test(celular)) {
-        celularBusquedaValido.value = false;
+      if (!emailValido(correo)) {
+        correoAccesoValido.value = false;
+        return;
+      }
+
+      correoAccesoValido.value = true;
+      buscando.value = true;
+
+      try {
+        const { data } = await axios.post(
+          `${API}/docente/cv/correo`,
+          { correo },
+          { headers: HEADERS }
+        );
+
+        if (Number(data.status) !== 200) {
+          throw new Error(data.mensaje || "No se pudo consultar el correo.");
+        }
+
+        if (data.estado === "creado") {
+          limpiarFormulario();
+          correoAcceso.value = correo;
+          tokenAcceso.value = data.token || "";
+          curriculumId.value = data.curriculum?.curriculum_docente_id || null;
+          passwordNueva.value = data.password || "";
+          passwordCopiada.value = false;
+          estadoCaptura.value = "nuevo";
+          aplicarCurriculum(data.curriculum);
+          if (modalPasswordNueva) modalPasswordNueva.show();
+          return;
+        }
+
+        if (data.estado === "password_requerido") {
+          correoAcceso.value = correo;
+          passwordAcceso.value = "";
+          mensajeInfo.value = data.mensaje || "";
+          pantalla.value = "password";
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          return;
+        }
+
+        if (data.estado === "sin_password") {
+          correoAcceso.value = correo;
+          mensajeInfo.value =
+            data.mensaje ||
+            "Tu expediente ya existe, pero aún no tiene contraseña. Contacta a soporte para que te la proporcionen.";
+          pantalla.value = "sin_password";
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          return;
+        }
+
+        throw new Error(data.mensaje || "No se pudo consultar el correo.");
+      } catch (error) {
+        mostrarError(error);
+      } finally {
+        buscando.value = false;
+      }
+    };
+
+    const copiarPasswordNueva = async () => {
+      if (!passwordNueva.value) return;
+
+      const copiado = await copiarAlPortapapeles(passwordNueva.value);
+      passwordCopiada.value = copiado;
+
+      if (!copiado) {
+        mensajeError.value =
+          "No se pudo copiar automáticamente. Selecciona la contraseña y cópiala manualmente.";
+        if (modalError) modalError.show();
+      }
+    };
+
+    const continuarConPasswordNueva = () => {
+      if (!passwordCopiada.value) return;
+
+      if (modalPasswordNueva) modalPasswordNueva.hide();
+
+      passwordNueva.value = "";
+      passwordCopiada.value = false;
+      pantalla.value = "formulario";
+      mensajeInfo.value =
+        "Tu expediente fue creado. Captura tu información y guarda los cambios cuando lo necesites.";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    const accederConPassword = async () => {
+      const correo = String(correoAcceso.value || "").trim().toLowerCase();
+
+      if (!passwordAcceso.value) {
+        mensajeError.value = "Ingresa tu contraseña.";
+        if (modalError) modalError.show();
         return;
       }
 
@@ -483,40 +582,24 @@ createApp({
 
       try {
         const { data } = await axios.post(
-          `${API}/docente/cv/buscar`,
-          { celular },
+          `${API}/docente/cv/acceder`,
+          { correo, password: passwordAcceso.value },
           { headers: HEADERS }
         );
 
         if (Number(data.status) !== 200) {
-          throw new Error(data.mensaje || "No se pudo consultar el expediente.");
+          throw new Error(data.mensaje || "No se pudo acceder al expediente.");
         }
 
-        limpiarEstado();
-        celularBusqueda.value = formatearCelular(celular);
-
-        if (data.estado_captura === "nuevo") {
-          formulario.celular = celular;
-          estadoCaptura.value = "nuevo";
-          mensajeInfo.value =
-            "No encontramos un expediente con este número. Captura tu información y guarda tu avance cuando lo necesites.";
-          pantalla.value = "formulario";
-        } else if (data.estado_captura === "completado") {
-          aplicarCurriculum(data.curriculum);
-          aplicarDocumentos(data.documentos || []);
-          estadoCaptura.value = "completado";
-          pantalla.value = "completado";
-          setTimeout(() => {
-            if (modalSoporte) modalSoporte.show();
-          }, 150);
-        } else {
-          aplicarCurriculum(data.curriculum);
-          aplicarDocumentos(data.documentos || []);
-          estadoCaptura.value = "en_captura";
-          mensajeInfo.value = `Continuando tu captura. Ya llevas ${progreso.value.porcentaje}% de tu expediente.`;
-          pantalla.value = "formulario";
-        }
-
+        limpiarFormulario();
+        correoAcceso.value = correo;
+        tokenAcceso.value = data.token || "";
+        curriculumId.value = data.curriculum?.curriculum_docente_id || null;
+        estadoCaptura.value = "existente";
+        aplicarCurriculum(data.curriculum);
+        aplicarDocumentos(data.documentos || []);
+        mensajeInfo.value = `Bienvenido de nuevo. Ya llevas ${progreso.value.porcentaje}% de tu expediente.`;
+        pantalla.value = "formulario";
         window.scrollTo({ top: 0, behavior: "smooth" });
       } catch (error) {
         mostrarError(error);
@@ -595,7 +678,6 @@ createApp({
       if (data.curriculum) aplicarCurriculum(data.curriculum);
       if (data.documentos) aplicarDocumentos(data.documentos);
 
-      estadoCaptura.value = data.estado_captura || "en_captura";
       limpiarArchivosNuevos();
       guardadoEn.value = new Date().toLocaleTimeString("es-MX", {
         hour: "2-digit",
@@ -603,19 +685,18 @@ createApp({
       });
     };
 
-    const guardarAvance = async (silencioso = false) => {
-      if (estadoCaptura.value === "completado") return false;
-
-      if (erroresFormato.value.length) {
-        mensajeError.value = erroresFormato.value.join(" ");
+    const guardarAvance = async () => {
+      if (!curriculumId.value || !tokenAcceso.value) {
+        mensajeError.value =
+          "Tu sesión expiró. Vuelve a ingresar con tu correo y contraseña.";
         if (modalError) modalError.show();
+        limpiarEstado();
+        pantalla.value = "identificacion";
         return false;
       }
 
-      const celular = normalizarCelular(formulario.celular);
-
-      if (!/^\d{10}$/.test(celular)) {
-        mensajeError.value = "Captura un número de celular válido de 10 dígitos.";
+      if (erroresFormato.value.length) {
+        mensajeError.value = erroresFormato.value.join(" ");
         if (modalError) modalError.show();
         return false;
       }
@@ -623,37 +704,39 @@ createApp({
       guardando.value = true;
 
       try {
-        const url = curriculumId.value
-          ? `${API}/docente/cv/${curriculumId.value}`
-          : `${API}/docente/cv`;
-
-        const { data } = await axios.post(url, construirFormData(), {
-          headers: HEADERS,
-        });
-
-        if (Number(data.status) === 409 && data.estado_captura === "completado") {
-          if (data.curriculum) aplicarCurriculum(data.curriculum);
-          if (data.documentos) aplicarDocumentos(data.documentos);
-          estadoCaptura.value = "completado";
-          pantalla.value = "completado";
-          return false;
-        }
+        const { data } = await axios.post(
+          `${API}/docente/cv/${curriculumId.value}`,
+          construirFormData(),
+          {
+            headers: {
+              ...HEADERS,
+              "X-CV-Token": tokenAcceso.value,
+            },
+          }
+        );
 
         if (Number(data.status) !== 200) {
-          throw new Error(data.mensaje || "No se pudo guardar el avance.");
+          throw new Error(data.mensaje || "No se pudieron guardar los cambios.");
         }
 
         aplicarRespuestaGuardado(data);
-
-        if (!silencioso) {
-          mostrarExito(
-            "Avance guardado",
-            "Puedes cerrar la página y continuar después con tu número de celular. Tus datos y documentos ya quedaron guardados."
-          );
-        }
+        mostrarExito(
+          "Cambios guardados",
+          "Tu información se actualizó correctamente. Puedes volver cuando quieras para seguir editando."
+        );
 
         return true;
       } catch (error) {
+        if (error?.response?.status === 401) {
+          limpiarEstado();
+          pantalla.value = "identificacion";
+          mensajeError.value =
+            error.response.data?.mensaje ||
+            "Tu sesión expiró. Vuelve a ingresar con tu correo y contraseña.";
+          if (modalError) modalError.show();
+          return false;
+        }
+
         mostrarError(error);
         return false;
       } finally {
@@ -661,68 +744,9 @@ createApp({
       }
     };
 
-    const intentarFinalizar = () => {
-      if (estadoCaptura.value === "completado") return;
-
-      if (erroresFormato.value.length) {
-        mensajeError.value = erroresFormato.value.join(" ");
-        if (modalError) modalError.show();
-        return;
-      }
-
-      if (progreso.value.faltantes.length) {
-        faltantesLista.value = progreso.value.faltantes;
-        if (modalFaltantes) modalFaltantes.show();
-        return;
-      }
-
-      if (modalConfirmar) modalConfirmar.show();
-    };
-
-    const confirmarFinalizar = async () => {
-      if (modalConfirmar) modalConfirmar.hide();
-
-      finalizando.value = true;
-
-      try {
-        const guardado = await guardarAvance(true);
-        if (!guardado) return;
-
-        const { data } = await axios.post(
-          `${API}/docente/cv/${curriculumId.value}/finalizar`,
-          {},
-          { headers: HEADERS }
-        );
-
-        if (Number(data.status) === 422) {
-          faltantesLista.value = data.faltantes || [];
-          if (modalFaltantes) modalFaltantes.show();
-          return;
-        }
-
-        if (Number(data.status) === 409 && data.estado_captura === "completado") {
-          if (data.curriculum) aplicarCurriculum(data.curriculum);
-          if (data.documentos) aplicarDocumentos(data.documentos);
-          estadoCaptura.value = "completado";
-          pantalla.value = "completado";
-          return;
-        }
-
-        if (Number(data.status) !== 200) {
-          throw new Error(data.mensaje || "No se pudo enviar el currículum.");
-        }
-
-        if (data.curriculum) aplicarCurriculum(data.curriculum);
-        if (data.documentos) aplicarDocumentos(data.documentos);
-        estadoCaptura.value = "completado";
-        pantalla.value = "completado";
-        progresoAbierto.value = false;
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      } catch (error) {
-        mostrarError(error);
-      } finally {
-        finalizando.value = false;
-      }
+    const onCelularFormularioInput = (event) => {
+      formulario.celular = normalizarCelular(event.target.value);
+      event.target.value = formatearCelular(formulario.celular);
     };
 
     const onArchivoChange = (tipo, event) => {
@@ -793,7 +817,7 @@ createApp({
       if (
         pantalla.value === "formulario" &&
         !window.confirm(
-          "Si regresas al inicio se perderán los cambios que no hayas guardado. El expediente actual conservará el celular con el que se identifica. ¿Deseas continuar?"
+          "Si regresas al inicio se perderán los cambios que no hayas guardado. Para volver a entrar necesitarás tu correo y contraseña. ¿Deseas continuar?"
         )
       ) {
         return;
@@ -811,10 +835,6 @@ createApp({
       if (seccion) seccion.scrollIntoView({ behavior: "smooth", block: "start" });
     };
 
-    const abrirSoporte = () => {
-      if (modalSoporte) modalSoporte.show();
-    };
-
     const limpiarBackdrops = () => {
       if (document.querySelector(".modal.show")) return;
       document.querySelectorAll(".modal-backdrop").forEach((elemento) => {
@@ -825,43 +845,19 @@ createApp({
       document.body.style.removeProperty("overflow");
     };
 
-    const cerrarSoporte = () => {
-      if (modalSoporte) modalSoporte.hide();
-
-      setTimeout(() => {
-        const elemento = document.getElementById("modalSoporte");
-        if (elemento && elemento.classList.contains("show")) {
-          elemento.classList.remove("show");
-          elemento.style.display = "none";
-          elemento.setAttribute("aria-hidden", "true");
-          elemento.removeAttribute("aria-modal");
-        }
-        limpiarBackdrops();
-      }, 350);
-    };
-
     onMounted(() => {
       setTimeout(() => {
         cargaInicial.value = true;
       }, 300);
 
-      modalFaltantes = new bootstrap.Modal(
-        document.getElementById("modalFaltantes")
-      );
-      modalConfirmar = new bootstrap.Modal(
-        document.getElementById("modalConfirmarFinalizar")
+      modalPasswordNueva = new bootstrap.Modal(
+        document.getElementById("modalPasswordNueva"),
+        { backdrop: "static", keyboard: false }
       );
       modalError = new bootstrap.Modal(document.getElementById("modalError"));
       modalExito = new bootstrap.Modal(document.getElementById("modalExito"));
-      modalSoporte = new bootstrap.Modal(document.getElementById("modalSoporte"));
 
-      [
-        "modalFaltantes",
-        "modalConfirmarFinalizar",
-        "modalError",
-        "modalExito",
-        "modalSoporte",
-      ].forEach((id) => {
+      ["modalPasswordNueva", "modalError", "modalExito"].forEach((id) => {
         const elemento = document.getElementById(id);
         if (elemento) elemento.addEventListener("hidden.bs.modal", limpiarBackdrops);
       });
@@ -871,20 +867,18 @@ createApp({
       cargaInicial,
       pantalla,
       estadoCaptura,
-      curriculumId,
-      curriculumResumen,
-      documentosServidor,
-      celularBusqueda,
-      celularBusquedaValido,
+      correoAcceso,
+      correoAccesoValido,
+      passwordAcceso,
+      passwordNueva,
+      passwordCopiada,
       buscando,
       guardando,
-      finalizando,
       guardadoEn,
       mensajeInfo,
       mensajeError,
       exitoTitulo,
       exitoMensaje,
-      faltantesLista,
       progresoAbierto,
       formulario,
       descripciones,
@@ -894,21 +888,18 @@ createApp({
       progreso,
       pasoActual,
       celularFormateado,
-      camposRequeridos: CAMPOS_REQUERIDOS,
       documentosRequeridos: DOCUMENTOS_REQUERIDOS,
-      onCelularBusquedaInput,
-      buscarExpediente,
+      consultarCorreo,
+      copiarPasswordNueva,
+      continuarConPasswordNueva,
+      accederConPassword,
       guardarAvance,
-      intentarFinalizar,
-      confirmarFinalizar,
+      onCelularFormularioInput,
       onArchivoChange,
       quitarArchivoNuevo,
       descargarExistente,
       volverAlInicio,
       irASeccion,
-      abrirSoporte,
-      cerrarSoporte,
-      fechaLegible,
     };
   },
 }).mount("#app");

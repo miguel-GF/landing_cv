@@ -20,26 +20,29 @@ futura a PHP o a una herramienta de compilacion como Vite.
 
 ## Flujo de captura
 
-1. El docente captura su numero de celular en la pantalla inicial.
-2. La API busca un expediente con ese celular (sin importar espacios, guiones o `+`).
-   - Si no existe, se abre un expediente nuevo.
-   - Si existe y esta `Activo`, se cargan sus datos y documentos para continuar.
-   - Si existe y esta `Completado`, se muestra la pantalla de curriculum cerrado.
-3. El docente puede guardar avances por partes. Los documentos se reemplazan por tipo
-   en lugar de acumularse, y el celular evita crear registros duplicados.
+1. El docente captura su **correo institucional** en la pantalla inicial.
+2. La API consulta si el correo ya existe:
+   - **No existe:** crea el expediente y genera una contraseña segura de 12
+     caracteres. La contraseña se muestra una sola vez y el docente debe copiarla
+     para continuar.
+   - **Existe con contraseña:** solicita la contraseña para abrir el expediente.
+   - **Existe sin contraseña:** muestra un aviso para contactar a soporte.
+3. Después de validar correo y contraseña, el docente puede capturar, guardar y
+   actualizar su información cuando quiera. El expediente ya no se bloquea para él.
 4. El indicador flotante muestra el porcentaje, lo capturado y lo que falta.
-5. Al enviar a revision se validan los datos y los 9 documentos obligatorios. Si todo
-   esta completo, el expediente cambia a `Completado`, se guarda `finalizado_fecha` y
-   queda bloqueado para el docente.
+5. El **admin** puede generar/restablecer contraseñas y cerrar o reabrir un CV.
+   El cierre no impide que el docente siga actualizando su información.
 
 ## Endpoints usados
 
-- `POST /api/v1/docente/cv/buscar` - busca por celular y devuelve el estado de captura.
-- `POST /api/v1/docente/cv` - crea o actualiza (por celular) un avance.
-- `POST|PUT /api/v1/docente/cv/{id}` - actualiza un avance existente.
-- `POST /api/v1/docente/cv/{id}/finalizar` - envia a revision y bloquea el expediente.
+- `POST /api/v1/docente/cv/correo` - consulta o crea un expediente por correo.
+- `POST /api/v1/docente/cv/acceder` - valida correo y contraseña.
+- `POST /api/v1/docente/cv/{id}` - guarda cambios. Requiere el header `X-CV-Token`.
+- `POST /api/v1/docente/cv/{id}/password` - admin: genera/restablece contraseña.
+- `POST /api/v1/docente/cv/{id}/finalizar` - admin: cierra el CV.
+- `POST /api/v1/docente/cv/{id}/reabrir` - admin: reabre el CV.
 - `GET /api/v1/docente/cv/{id}` - detalle completo con documentos activos.
+- `GET /api/v1/docente/cvs` - lista de currículums para el admin.
 
 El backend se encuentra en el proyecto `school-control`. Para publicar este flujo se
-deben ejecutar las migraciones nuevas de `curriculum_docentes` (fecha de finalizacion y
-campos opcionales para permitir avances parciales).
+deben ejecutar las migraciones nuevas de `curriculum_docentes`.

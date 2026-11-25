@@ -58,6 +58,12 @@ createApp({
       curriculumsFiltrados: [], // Para la búsqueda local
       busqueda: "",
       cargaInicial: false,
+
+      // --- Acciones admin ---
+      docentePassword: null,
+      passwordGenerada: "",
+      passwordCopiada: false,
+      faltantesAdmin: [],
     };
   },
   methods: {
@@ -184,6 +190,135 @@ createApp({
 
     verDetalle(id) {
       window.location.href = `detalle-archivos.html?id=${id}`;
+    },
+
+    async copiarTexto(valor) {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(valor);
+          return true;
+        }
+      } catch (error) {
+        // Intentar con el metodo alternativo.
+      }
+
+      try {
+        const input = document.createElement("textarea");
+        input.value = valor;
+        input.style.position = "fixed";
+        input.style.opacity = "0";
+        document.body.appendChild(input);
+        input.select();
+        const copiado = document.execCommand("copy");
+        document.body.removeChild(input);
+        return copiado;
+      } catch (error) {
+        return false;
+      }
+    },
+
+    async generarPassword(docente) {
+      const nombre = docente.nombre || docente.correo_institucional || "docente";
+      if (
+        !window.confirm(
+          `¿Generar una nueva contraseña para ${nombre}? La contraseña anterior dejará de funcionar.`
+        )
+      ) {
+        return;
+      }
+
+      try {
+        const response = await axios.post(
+          `docente/cv/${docente.curriculum_docente_id}/password`
+        );
+
+        if (Number(response.data.status) !== 200) {
+          throw new Error(response.data.mensaje || "No se pudo generar la contraseña.");
+        }
+
+        this.docentePassword = docente;
+        this.passwordGenerada = response.data.password;
+        this.passwordCopiada = false;
+        docente.tiene_password = true;
+
+        bootstrap.Modal.getOrCreateInstance(
+          document.getElementById("modalPasswordAdmin")
+        ).show();
+      } catch (error) {
+        alert(
+          error.response?.data?.mensaje ||
+            error.message ||
+            "No se pudo generar la contraseña."
+        );
+      }
+    },
+
+    async copiarPasswordAdmin() {
+      if (!this.passwordGenerada) return;
+
+      const copiado = await this.copiarTexto(this.passwordGenerada);
+      this.passwordCopiada = copiado;
+
+      if (!copiado) {
+        alert("No se pudo copiar automáticamente. Selecciona la contraseña y cópiala manualmente.");
+      }
+    },
+
+    async cerrarCV(docente) {
+      const nombre = docente.nombre || docente.correo_institucional || "docente";
+      if (!window.confirm(`¿Cerrar el CV de ${nombre}?`)) return;
+
+      try {
+        const response = await axios.post(
+          `docente/cv/${docente.curriculum_docente_id}/finalizar`
+        );
+
+        if (Number(response.data.status) === 422) {
+          this.faltantesAdmin = response.data.faltantes || [];
+          bootstrap.Modal.getOrCreateInstance(
+            document.getElementById("modalFaltantesAdmin")
+          ).show();
+          return;
+        }
+
+        if (Number(response.data.status) !== 200) {
+          throw new Error(response.data.mensaje || "No se pudo cerrar el CV.");
+        }
+
+        docente.status = "Completado";
+        docente.finalizado_fecha =
+          response.data.curriculum?.finalizado_fecha || new Date().toISOString();
+      } catch (error) {
+        alert(
+          error.response?.data?.mensaje ||
+            error.message ||
+            "No se pudo cerrar el CV."
+        );
+      }
+    },
+
+    async reabrirCV(docente) {
+      const nombre = docente.nombre || docente.correo_institucional || "docente";
+      if (!window.confirm(`¿Reabrir el CV de ${nombre}?`)) return;
+
+      try {
+        const response = await axios.post(
+          `docente/cv/${docente.curriculum_docente_id}/reabrir`
+        );
+
+        if (Number(response.data.status) !== 200) {
+          throw new Error(response.data.mensaje || "No se pudo reabrir el CV.");
+        }
+
+        docente.status = "Activo";
+        docente.finalizado_fecha = null;
+      } catch (error) {
+        alert(
+          error.response?.data?.mensaje ||
+            error.message ||
+            "No se pudo reabrir el CV."
+        );
+      }
     },
   },
   mounted() {
